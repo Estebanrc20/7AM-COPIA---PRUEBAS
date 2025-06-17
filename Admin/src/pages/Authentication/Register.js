@@ -39,10 +39,27 @@ const Register = () => {
       if (error) {
         setErrorMsg(error.message);
       } else {
+        const user = data.user;
+
+        // ✅ Registrar también en la tabla users_data
+        const { error: insertError } = await supabase.from("users_data").insert([
+          {
+            id: user.id,           // UUID de Supabase Auth
+            nombre: username,
+            email: email,
+            metricoolIframe: ""    // opcional, lo puedes dejar vacío o ajustar
+          }
+        ]);
+
+        if (insertError) {
+  console.error("Error creando perfil en users_data:", insertError); // <--- Aquí
+  setErrorMsg("Error al crear tu perfil, por favor intenta de nuevo.");
+  return;
+        }
+
         setSuccess(true);
-        // Opcional: guardar user en localStorage
-        localStorage.setItem("authUser", JSON.stringify(data.user));
-        setTimeout(() => navigate("/login"), 1500); // mejora UX
+        localStorage.setItem("authUser", JSON.stringify(user));
+        setTimeout(() => navigate("/login"), 1500);
       }
     },
   });
