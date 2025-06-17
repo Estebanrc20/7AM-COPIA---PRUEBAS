@@ -106,7 +106,7 @@ const Header = props => {
 
             <div className="d-none d-sm-block">
 
-              <Dropdown
+              {/*<Dropdown
                 isOpen={singlebtn}
                 toggle={() => setSinglebtn(!singlebtn)}
                 className="pt-3 d-inline-block"
@@ -121,7 +121,7 @@ const Header = props => {
                   <div className="dropdown-divider"></div>
                   <DropdownItem>Separated link</DropdownItem>
                 </DropdownMenu>
-              </Dropdown>
+              </Dropdown>*/}
 
             </div>
           </div>

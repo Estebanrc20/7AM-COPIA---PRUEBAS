@@ -1,45 +1,40 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import VerticalLayout from "components/VerticalLayout";
 import HorizontalLayout from "components/HorizontalLayout";
 
-//constants
+// constants
 import { layoutTypes } from "../../constants/layout";
 
 const Authmiddleware = (props) => {
+  const location = useLocation();
 
   const { layoutType } = useSelector(state => ({
     layoutType: state.Layout.layoutType,
   }));
 
   const getLayout = (layoutType) => {
-    let Layout = VerticalLayout;
     switch (layoutType) {
-      case layoutTypes.VERTICAL:
-        Layout = VerticalLayout;
-        break;
       case layoutTypes.HORIZONTAL:
-        Layout = HorizontalLayout;
-        break;
+        return HorizontalLayout;
+      case layoutTypes.VERTICAL:
       default:
-        break;
+        return VerticalLayout;
     }
-    return Layout;
   };
 
   const Layout = getLayout(layoutType);
 
   if (!localStorage.getItem("authUser")) {
-    return (
-      <Navigate to={{ pathname: "/login", state: { from: props.location } }} />
-    );
+    return <Navigate to="/login" state={{ from: location }} />;
   }
 
   return (
     <React.Fragment>
       <Layout>{props.children}</Layout>
-    </React.Fragment>);
+    </React.Fragment>
+  );
 };
 
 export default Authmiddleware;

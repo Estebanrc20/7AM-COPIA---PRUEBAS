@@ -6,37 +6,29 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
-
-//i18n
 import { withTranslation } from "react-i18next";
-// Redux
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
-import withRouter from "components/Common/withRouter";
-
-// users
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../../../supabaseClient"; // Asegúrate que la ruta sea correcta
 import user1 from "../../../assets/images/users/user-4.jpg";
 
 const ProfileMenu = props => {
-  // Declare a new state variable, which we'll call "menu"
   const [menu, setMenu] = useState(false);
-
   const [username, setusername] = useState("Admin");
+  const navigate = useNavigate(); // para redireccionar
 
   useEffect(() => {
     if (localStorage.getItem("authUser")) {
-      if (process.env.REACT_APP_DEFAULTAUTH === "firebase") {
-        const obj = JSON.parse(localStorage.getItem("authUser"));
-        setusername(obj.displayName);
-      } else if (
-        process.env.REACT_APP_DEFAULTAUTH === "fake" ||
-        process.env.REACT_APP_DEFAULTAUTH === "jwt"
-      ) {
-        const obj = JSON.parse(localStorage.getItem("authUser"));
-        setusername(obj.username);
-      }
+      const obj = JSON.parse(localStorage.getItem("authUser"));
+      setusername(obj.username || obj.displayName || "Usuario");
     }
   }, [props.success]);
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem("authUser");
+    navigate("/login", { replace: true });
+  };
 
   return (
     <React.Fragment>
@@ -58,29 +50,14 @@ const ProfileMenu = props => {
         </DropdownToggle>
         <DropdownMenu className="dropdown-menu-end">
           <DropdownItem tag="a" href="/PerfilUsuario">
-            {" "}
             <i className="mdi mdi-account-circle font-size-17 align-middle me-1" />
-            {props.t("Perfil")}{" "}
+            {props.t("Perfil")}
           </DropdownItem>
-          {/*<DropdownItem tag="a" href="#">
-            {" "}
-            <i className="mdi mdi-wallet font-size-17 align-middle me-1" />
-            {props.t("My Wallet")}{" "}
-          </DropdownItem>*/}
-          {/*<DropdownItem tag="a" href="#">
-            {" "}
-            <i className="mdi mdi-cog font-size-17 align-middle me-1" />
-            {props.t("Settings")}{" "}<span className="badge bg-success ms-auto">11</span>
-          </DropdownItem>*/}
-          {/*<DropdownItem tag="a" href="authpantallabloqueo">
-          <i className="mdi mdi-lock-open-outline font-size-17 align-middle me-1" />
-            {props.t("Bloquear Pantalla")}
-          </DropdownItem>*/}
           <div className="dropdown-divider" />
-          <Link to="/logout" className="dropdown-item text-danger">
-          <i className="bx bx-power-off font-size-17 align-middle me-1 text-danger" />
-            <span>{props.t("Cerrar Sesion")}</span>
-          </Link>
+          <DropdownItem onClick={logout} className="text-danger">
+            <i className="bx bx-power-off font-size-17 align-middle me-1 text-danger" />
+            <span>{props.t("Cerrar Sesión")}</span>
+          </DropdownItem>
         </DropdownMenu>
       </Dropdown>
     </React.Fragment>
@@ -97,6 +74,4 @@ const mapStatetoProps = state => {
   return { error, success };
 };
 
-export default withRouter(
-  connect(mapStatetoProps, {})(withTranslation()(ProfileMenu))
-);
+export default connect(mapStatetoProps)(withTranslation()(ProfileMenu));

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from "react";
+import React from "react";
 import {
   Container,
   Row,
@@ -11,43 +11,29 @@ import {
 import MetricoolPanel from 'components/Metricool/MetricoolPanel';
 
 const Dashboard = () => {
-  const token = 'BYYGMTUNSPCPMYOOFQMYSPFVEAVCMDLZLPRPRVAMHSXGRVHHDVXVHWQGQKDBOEBR';
-  const loginUrl = `https://app.metricool.com/autoin/KHDLAUEHUOLAKQCIJJXW`;
-
   document.title = "Dashboard | 7 AM Digital";
 
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-           <div className="page-title-box">
-                      <Row className="align-items-center">
-                        <Col md={8}>
-               <h6 className="page-title">Dashboard</h6>
-                          <ol className="breadcrumb m-0">
-                            <li className="breadcrumb-item active">7AM Digital</li>
-                          </ol>
-            </Col>
-          </Row>
+          <div className="page-title-box">
+            <Row className="align-items-center">
+              <Col md={8}>
+                <h6 className="page-title">Dashboard</h6>
+                <ol className="breadcrumb m-0">
+                  <li className="breadcrumb-item active">7AM Digital</li>
+                </ol>
+              </Col>
+            </Row>
           </div>
           <Row>
             <Col md={12}>
               <Card>
                 <CardBody>
-                  <iframe
-                    src={loginUrl}
-                    style={{ width: '100%', height: '80vh', border: 'none' }}
-                    title="Metricool White Label"
-                  />
+                  <MetricoolPanel />
                 </CardBody>
               </Card>
-            </Col>
-          </Row>
-          <Row>
-            <Col className="text-center mt-3">
-              <p className="text-muted">
-                Si no se abre automáticamente, <a href={loginUrl} target="_blank" rel="noopener noreferrer">haz clic aquí</a>.
-              </p>
             </Col>
           </Row>
         </Container>
@@ -61,6 +47,7 @@ Dashboard.propTypes = {
 };
 
 export default Dashboard;
+
 
 
 /*import PropTypes from 'prop-types';
@@ -87,9 +74,7 @@ const Dashboard = () => {
 
   return <MetricoolPanel loginToken={token} />;
 
-
-
-
+  
 const Dashboard = props => {
   const [menu, setMenu] = useState(false);
   const toggle = () => {

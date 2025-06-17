@@ -1,59 +1,61 @@
-import PropTypes from 'prop-types';
-import React, { useState, useEffect } from "react";
-
-import { Row, Col, CardBody, Card, Container, Label, Form, FormFeedback, Input } from "reactstrap";
-
-// Redux
-import { connect, useSelector, useDispatch } from "react-redux";
-import { Link } from 'react-router-dom';
-import withRouter from 'components/Common/withRouter';
-
-// Formik validation
+import React, { useEffect, useState } from "react";
+import {
+  Row, Col, CardBody, Card, Container, Label, Form, FormFeedback, Input, Spinner
+} from "reactstrap";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-
-// actions
-import { loginUser, apiError } from "../../store/actions";
-
-// import images
+import { supabase } from "../../supabaseClient";
 import logoSm from "../../assets/images/logo7amblanco.png";
 
-const Login = props => {
-  const dispatch = useDispatch();
-
-  const [userLogin, setUserLogin] = useState([]);
-
-  const { user } = useSelector(state => ({
-    user: state.Account.user,
-  }));
-
-  useEffect(() => {
-    if (user && user) {
-      setUserLogin({
-        email: user.email,
-        password: user.password
-      });
-    }
-  }, [user]);
+const Login = () => {
+  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const validation = useFormik({
-    // enableReinitialize : use this flag when initial values needs to be changed
-    enableReinitialize: true,
-
     initialValues: {
-      email: userLogin.email || "admin@themesbrand.com" || '',
-      password: userLogin.password || "123456" || '',
+      email: "",
+      password: "",
     },
     validationSchema: Yup.object({
-      email: Yup.string().required("Por favor, introduzca su nombre de usuario"),
-      password: Yup.string().required("Por favor, introduzca su contraseña"),
+      email: Yup.string().email("Correo inválido").required("Por favor, introduce tu correo"),
+      password: Yup.string().required("Por favor, introduce tu contraseña"),
     }),
-    onSubmit: (values) => {
-      dispatch(loginUser(values, props.router.navigate));
+    onSubmit: async (values) => {
+      setLoading(true);
+      setErrorMsg("");
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (error) {
+        setErrorMsg(error.message);
+        localStorage.removeItem("authUser");
+      } else {
+        localStorage.setItem("authUser", JSON.stringify(data.session?.user || data.user));
+        setTimeout(() => navigate("/dashboard"), 300); // Mejora UX
+      }
+
+      setLoading(false);
     }
   });
 
-  document.title = "Iniciar Sesion | 7AM Digital";
+  useEffect(() => {
+    document.title = "Iniciar Sesión | 7AM Digital";
+
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        navigate("/dashboard");
+      }
+    };
+
+    checkUser();
+  }, [navigate]);
+
   return (
     <React.Fragment>
       <div className="home-btn d-none d-sm-block">
@@ -68,12 +70,8 @@ const Login = props => {
               <Card className="overflow-hidden">
                 <div className="bg-primary">
                   <div className="text-primary text-center p-4">
-                    <h5 className="text-white font-size-20">
-                      Bienvenido de nuevo
-                    </h5>
-                    <p className="text-white-50">
-                      Inicia Sesión para continuar en 7AM
-                    </p>
+                    <h5 className="text-white font-size-20">Bienvenido de nuevo</h5>
+                    <p className="text-white-50">Inicia sesión para continuar en 7AM</p>
                     <Link to="/">
                       <img src={logoSm} height="45" alt="logo" />
                     </Link>
@@ -82,89 +80,73 @@ const Login = props => {
 
                 <CardBody className="p-4">
                   <div className="p-3">
-                    <Form className="mt-4"
+                    <Form
+                      className="mt-4"
                       onSubmit={(e) => {
                         e.preventDefault();
                         validation.handleSubmit();
                         return false;
                       }}
-                      action="#">
-
+                    >
                       <div className="mb-3">
-                        <Label className="form-label" htmlFor="username">Nombre de usuario</Label>
+                        <Label htmlFor="email">Correo</Label>
                         <Input
+                          id="email"
                           name="email"
-                          className="form-control"
-                          placeholder="Ingresa tu nombre de usuario"
                           type="email"
-                          id="username"
+                          placeholder="Ingresa tu correo"
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
-                          value={validation.values.email || ""}
-                          invalid={
-                            validation.touched.email && validation.errors.email ? true : false
-                          }
+                          value={validation.values.email}
+                          invalid={validation.touched.email && !!validation.errors.email}
                         />
-                        {validation.touched.email && validation.errors.email ? (
-                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
-                        ) : null}
+                        <FormFeedback>{validation.errors.email}</FormFeedback>
                       </div>
 
                       <div className="mb-3">
-                        <Label className="form-label" htmlFor="userpassword">Contraseña</Label>
+                        <Label htmlFor="password">Contraseña</Label>
                         <Input
+                          id="password"
                           name="password"
-                          value={validation.values.password || ""}
                           type="password"
-                          className="form-control"
                           placeholder="Ingresa tu contraseña"
                           onChange={validation.handleChange}
                           onBlur={validation.handleBlur}
-                          invalid={
-                            validation.touched.password && validation.errors.password ? true : false
-                          }
+                          value={validation.values.password}
+                          invalid={validation.touched.password && !!validation.errors.password}
                         />
-                        {validation.touched.password && validation.errors.password ? (
-                          <FormFeedback type="invalid">{validation.errors.password}</FormFeedback>
-                        ) : null}
+                        <FormFeedback>{validation.errors.password}</FormFeedback>
                       </div>
 
-                      <div className="mb-3 row">
-                        <div className="col-sm-6">
-                          <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="customControlInline" />
-                            <label className="form-check-label" htmlFor="customControlInline">Recuerdame</label>
-                          </div>
+                      {errorMsg && (
+                        <div className="text-danger mb-3">
+                          <strong>Error:</strong> {errorMsg}
                         </div>
-                        <div className="col-sm-6 text-end">
-                          <button className="btn btn-primary w-md waves-effect waves-light" type="submit">Iniciar Sesion</button>
+                      )}
+
+                      <div className="mb-3 d-flex justify-content-between align-items-center">
+                        <div className="form-check">
+                          <input type="checkbox" className="form-check-input" id="remember" />
+                          <label className="form-check-label" htmlFor="remember">Recuérdame</label>
                         </div>
+                        <button type="submit" className="btn btn-primary w-md" disabled={loading}>
+                          {loading ? <Spinner size="sm" color="light" /> : "Iniciar Sesión"}
+                        </button>
                       </div>
 
-                      <div className="mt-2 mb-0 row">
-                        <div className="col-12 mt-4">
-                          <Link to="/forgot-password"><i className="mdi mdi-lock"></i> ¿Olvidaste tu contraseña?</Link>
-                        </div>
+                      <div className="text-center mt-4">
+                        <Link to="/forgot-password">
+                          <i className="mdi mdi-lock"></i> ¿Olvidaste tu contraseña?
+                        </Link>
                       </div>
-
                     </Form>
                   </div>
                 </CardBody>
               </Card>
+
               <div className="mt-5 text-center">
-                <p>
-                  ¿No tienes una cuenta?{" "}
-                  <Link
-                    to="/register"
-                    className="fw-medium text-primary"
-                  >
-                    {" "}
-                    Registrate ahora{" "}
-                  </Link>{" "}
-                </p>
-                <p>
-                  © {new Date().getFullYear()} 7AM Digital{" "}
-                </p>
+                <p>¿No tienes una cuenta? <Link to="/register" className="fw-medium text-primary">Regístrate ahora</Link></p>
+                <p>© {new Date().getFullYear()} 7AM Digital</p>
               </div>
             </Col>
           </Row>
@@ -174,220 +156,4 @@ const Login = props => {
   );
 };
 
-const mapStateToProps = state => {
-  const { error } = state.Login;
-  return { error };
-};
-
-export default withRouter(
-  connect(mapStateToProps, { loginUser, apiError })(Login)
-);
-
-Login.propTypes = {
-  error: PropTypes.any,
-  history: PropTypes.object,
-  loginUser: PropTypes.func,
-};
-/*import PropTypes from 'prop-types';
-import React, { useState, useEffect } from "react";
-
-import { Row, Col, CardBody, Card, Container, Label, Form, FormFeedback, Input } from "reactstrap";
-import axios from "axios";
-
-// Redux
-import { connect, useSelector, useDispatch } from "react-redux";
-import { Link } from 'react-router-dom';
-import withRouter from 'components/Common/withRouter';
-
-// Formik validation
-import * as Yup from "yup";
-import { useFormik } from "formik";
-
-// actions
-import { loginUser, apiError } from "../../store/actions";
-
-// import images
-import logoSm from "../../assets/images/logo7amblanco.png";
-
-const Login = props => {
-  const dispatch = useDispatch();
-
-  const [userLogin, setUserLogin] = useState([]);
-
-  const { user } = useSelector(state => ({
-    user: state.Account.user,
-  }));
-
-  useEffect(() => {
-    if (user && user) {
-      setUserLogin({
-        email: user.email,
-        password: user.password
-      });
-    }
-  }, [user]);
-
-  const validation = useFormik({
-    // enableReinitialize : use this flag when initial values needs to be changed
-    enableReinitialize: true,
-
-    initialValues: {
-      email: userLogin.email || "" || '',
-      password: userLogin.password || "" || '',
-    },
-    validationSchema: Yup.object({
-      email: Yup.string().required("Por favor, introduzca su nombre de usuario"),
-      password: Yup.string().required("Por favor, introduzca su contraseña"),
-    }),
-    onSubmit: (values) => {
-      axios.post("http://localhost:3000/login", values)
-  .then(response => {
-    if (response.data.success) {
-      // Redirige al dashboard con el iframe
-      props.router.navigate(`/dashboard?iframe=${encodeURIComponent(response.data.iframe)}`);
-    } else {
-      alert("Correo o contraseña incorrectos");
-    }
-  })
-  .catch(error => {
-    console.error("Error al iniciar sesión:", error);
-    alert("Error en el servidor al intentar iniciar sesión");
-  });
-    }
-  });
-
-  document.title = "Iniciar Sesion | 7AM Digital";
-  return (
-    <React.Fragment>
-      <div className="home-btn d-none d-sm-block">
-        <Link to="/" className="text-dark">
-          <i className="fas fa-home h2" />
-        </Link>
-      </div>
-      <div className="account-pages my-5 pt-sm-5">
-        <Container>
-          <Row className="justify-content-center">
-            <Col md={8} lg={6} xl={4}>
-              <Card className="overflow-hidden">
-                <div className="bg-primary">
-                  <div className="text-primary text-center p-4">
-                    <h5 className="text-white font-size-20">
-                      Bienvenido de nuevo
-                    </h5>
-                    <p className="text-white-50">
-                    Inicia Sesión para continuar en 7AM
-                    </p>
-                    <Link to="/">
-                    <img src={logoSm} height="45" alt="logo" />                     
-                    </Link>
-                  </div>
-                </div>
-
-                <CardBody className="p-4">
-                  <div className="p-3">
-                    <Form className="mt-4"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        validation.handleSubmit();
-                        return false;
-                      }}
-                      action="#">
-
-                      <div className="mb-3">
-                        <Label className="form-label" htmlFor="username">Nombre de usuario</Label>
-                        <Input
-                          name="email"
-                          className="form-control"
-                          placeholder="Ingresa tu nombre de usuario"
-                          type="email"
-                          id="username"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          value={validation.values.email || ""}
-                          invalid={
-                            validation.touched.email && validation.errors.email ? true : false
-                          }
-                        />
-                        {validation.touched.email && validation.errors.email ? (
-                          <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
-                        ) : null}
-                      </div>
-
-                      <div className="mb-3">
-                        <Label className="form-label" htmlFor="userpassword">Contraseña</Label>
-                        <Input
-                          name="password"
-                          value={validation.values.password || ""}
-                          type="password"
-                          className="form-control"
-                          placeholder="Ingresa tu contraseña"
-                          onChange={validation.handleChange}
-                          onBlur={validation.handleBlur}
-                          invalid={
-                            validation.touched.password && validation.errors.password ? true : false
-                          }
-                        />
-                        {validation.touched.password && validation.errors.password ? (
-                          <FormFeedback type="invalid">{validation.errors.password}</FormFeedback>
-                        ) : null}
-                      </div>
-
-                      <div className="mb-3 row">
-                        <div className="col-sm-6">
-                          <div className="form-check">
-                            <input type="checkbox" className="form-check-input" id="customControlInline" />
-                            <label className="form-check-label" htmlFor="customControlInline">Recuerdame</label>
-                          </div>
-                        </div>
-                        <div className="col-sm-6 text-end">
-                          <button className="btn btn-primary w-md waves-effect waves-light" type="submit">Iniciar Sesion</button>
-                        </div>
-                      </div>
-
-                      <div className="mt-2 mb-0 row">
-                        <div className="col-12 mt-4">
-                          <Link to="/forgot-password"><i className="mdi mdi-lock"></i> ¿Olvidaste tu contraseña?</Link>
-                        </div>
-                      </div>
-
-                    </Form>
-                  </div>
-                </CardBody>
-              </Card>
-              <div className="mt-5 text-center">
-                <p>
-                  ¿No tienes una cuenta?{" "}
-                  <Link
-                    to="/register"
-                    className="fw-medium text-primary"
-                  >
-                    {" "}
-                    Registrate ahora{" "}
-                  </Link>{" "}
-                </p>
-                <p>
-                  © {new Date().getFullYear()} 7AM Digital{" "}
-                </p>
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </div>
-    </React.Fragment>
-  );
-};
-
-const mapStateToProps = state => {
-  const { error } = state.Login;
-  return { error };
-};
-
-export default withRouter(
-  connect(mapStateToProps, { loginUser, apiError })(Login)
-);
-
-Login.propTypes = {
-  error: PropTypes.any,
-  history: PropTypes.object,
-  loginUser: PropTypes.func,
-};*/
+export default Login;

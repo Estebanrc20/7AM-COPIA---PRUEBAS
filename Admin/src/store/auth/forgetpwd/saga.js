@@ -21,7 +21,7 @@ function* forgetUser({ payload: { user, history } }) {
       if (response) {
         yield put(
           userForgetPasswordSuccess(
-            "Reset link are sended to your mailbox, check there first"
+            "El enlace de restablecimiento se envía a su buzón de correo, verifique allí primero"
           )
         )
       }
@@ -32,7 +32,7 @@ function* forgetUser({ payload: { user, history } }) {
       if (response) {
         yield put(
           userForgetPasswordSuccess(
-            "Reset link are sended to your mailbox, check there first"
+            "El enlace de restablecimiento se envía a su buzón de correo, verifique allí primero"
           )
         )
       }
@@ -43,7 +43,7 @@ function* forgetUser({ payload: { user, history } }) {
       if (response) {
         yield put(
           userForgetPasswordSuccess(
-            "Reset link are sended to your mailbox, check there first"
+            "El enlace de restablecimiento se envía a su buzón de correo, verifique allí primero"
           )
         )
       }

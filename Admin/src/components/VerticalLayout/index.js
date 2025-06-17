@@ -42,7 +42,7 @@ class Layout extends Component {
     document.body.addEventListener("click", this.hideRightbar, true);
 
     // document.title =
-    //   currentage + " | Veltrix - React Admin & Dashboard Template"
+    //   currentage + " | 7AM Digital"
     if (this.props.leftSideBarTheme) {
       this.props.changeSidebarTheme(this.props.leftSideBarTheme);
     }
