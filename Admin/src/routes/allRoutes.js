@@ -6,11 +6,11 @@ import PerfilUsuario from "../pages/Authentication/PerfilUsuario";
 // Pages Calendar
 import Calendario from "../pages/Calendario/index";
 
-//Email
-import PublicacionSimultanea from "../pages/Planificacion/publicacionsimultanea";
+{/* //email
+{import PublicacionSimultanea from "../pages/Planificacion/publicacionsimultanea";
 import Analisis from "../pages/Planificacion/analisis";
 import Gestion from "../pages/Planificacion/gestion";
-import Reportes from "../pages/Planificacion/reportes";
+import Reportes from "../pages/Planificacion/reportes"; */}
 
 
 // Authentication related pages
@@ -28,11 +28,17 @@ import ChartjsChart from "../pages/Charts/ChartjsChart";
 import EChart from "../pages/Charts/EChart";
 import SparklineChart from "../pages/Charts/SparklineChart";
 
+// Planificacion
+import Planificacion from "../pages/Planificacion";
+
 // Plantillas
 import Plantillas from "../pages/Plantillas";
 
 //Ideas
 import Ideas from "../pages/Ideas";
+
+//ArticulosBlog
+import ArticulosDelBlog from "../pages/ArticulosDelBlog";
 
 
 //Pages
@@ -58,17 +64,26 @@ const userRoutes = [
   // //perfil
   { path: "/PerfilUsuario", component: <PerfilUsuario /> },
 
+  {/*
   //Email
-  { path: "/publicacionsimultanea", component: <PublicacionSimultanea/> },
+{ path: "/publicacionsimultanea", component: <PublicacionSimultanea/> },
   { path: "/analisis", component: <Analisis/> },
   { path: "/gestion", component: <Gestion/> },
-  { path: "/reportes", component: <Reportes /> },
+  { path: "/reportes", component: <Reportes /> }, 
+   */},
+  
+
+  // Planificacion 
+  { path: "/planificacion", component: <Planificacion />},
 
   // Plantillas
   { path: "/plantillas", component: <Plantillas />},
 
   // Ideas
   { path: "/ideas", component: <Ideas />},
+
+  // ArticulosBlog
+  { path: "/articulosdelblog", component: <ArticulosDelBlog/>},
 
   
 

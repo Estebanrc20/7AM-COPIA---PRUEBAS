@@ -159,14 +159,14 @@ const SidebarContent = props => {
                 <i className="ti-calendar"></i>
                 <span>{props.t("Calendario")}</span>
               </Link>
-            </li>
+            </li> */}
 
             <li>
-              <Link to="/" className="has-arrow waves-effect">
-                <i className="ti-write"></i>
-                <span>{props.t("Planificación de contenido con Metricool")}</span>
+              <Link to="/Planificacion" >
+                <i className="ti-bar-chart"></i>
+                <span>{props.t("Planificación y Analitica")}</span>
               </Link>
-              <ul className="sub-menu" aria-expanded="false">
+              {/*<ul className="sub-menu" aria-expanded="false">
                 <li>
                   <Link to="/publicacionsimultanea">{props.t("Publicacion simultanea en varios canales digitales")}</Link>
                 </li>
@@ -179,8 +179,8 @@ const SidebarContent = props => {
                 <li>
                   <Link to="/reportes">{props.t("Reportes mensuales de rendimiento")} </Link>
                   </li>
-              </ul>
-            </li>*/}
+              </ul>*/}
+            </li>
             <li>
             <Link to="/Plantillas" >
                 <i className="ti-layout"></i>
@@ -192,6 +192,12 @@ const SidebarContent = props => {
               <Link to="/Ideas" className=" waves-effect">
                 <i className="ti-light-bulb"></i>
                 <span>{props.t("Ideas de contenido")}</span>
+              </Link>
+            </li>
+            <li>
+              <Link to="/ArticulosDelBlog" className=" waves-effect">
+                <i className="ti-write"></i>
+                <span>{props.t("Articulos del blog")}</span>
               </Link>
             </li>
 
