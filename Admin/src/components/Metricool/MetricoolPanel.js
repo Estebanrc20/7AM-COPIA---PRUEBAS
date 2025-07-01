@@ -53,7 +53,7 @@ const MetricoolPanel = () => {
 
   if (loading) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <div style={{ padding: '0rem', textAlign: 'center' }}>
         <h4>Cargando estadísticas personalizadas...</h4>
       </div>
     );
@@ -61,14 +61,14 @@ const MetricoolPanel = () => {
 
   if (!iframe) {
     return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <div style={{ padding: '0rem', textAlign: 'center' }}>
         <h4>No se encontró un iframe configurado para este usuario.</h4>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '2rem', textAlign: 'center' }}>
+    <div style={{ padding: '0rem', textAlign: 'center' }}>
       <iframe
         src={iframe}
         style={{ width: '100%', height: '80vh', border: 'none' }}
