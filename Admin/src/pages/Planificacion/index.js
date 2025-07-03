@@ -76,7 +76,7 @@ const Dashboard = () => {
                         size="sm"
                         onClick={() => window.open(iframeUrl, "_blank")}
                       >
-                        Ver estadísticas en nueva ventana
+                        Ver en pantalla completa
                       </Button>
                     </div>
                   )}

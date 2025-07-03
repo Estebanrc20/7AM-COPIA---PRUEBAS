@@ -4,15 +4,6 @@ import { call, put, takeEvery, takeLatest } from "redux-saga/effects";
 import { LOGIN_USER, LOGOUT_USER } from "./actionTypes";
 import { apiError, loginSuccess, logoutUserSuccess } from "./actions";
 
-//Include Both Helper File with needed methods
-import { getFirebaseBackend } from "../../../helpers/firebase_helper";
-import {
-  postFakeLogin,
-  postJwtLogin,
-  postSocialLogin,
-} from "../../../helpers/fakebackend_helper";
-
-const fireBaseBackend = getFirebaseBackend();
 
 function* loginUser({ payload: { user, history } }) {
   try {

@@ -11,8 +11,7 @@ import { showRightSidebarAction, toggleLeftmenu } from "../../store/actions"
 import { Row, Col, Dropdown, DropdownToggle, DropdownMenu,DropdownItem } from "reactstrap"
 
 // Import menuDropdown
-import LanguageDropdown from "../CommonForBoth/TopbarDropdown/LanguageDropdown"
-//import NotificationDropdown from "../CommonForBoth/TopbarDropdown/NotificationDropdown"
+
 import ProfileMenu from "../CommonForBoth/TopbarDropdown/ProfileMenu"
 
 //i18n
@@ -26,34 +25,7 @@ import logo7AMImg from "../../assets/images/LOGO7AM.png";
 import logo7amblanco from "../../assets/images/logo7amblanco.png";
 const Header = props => {
 
-  function toggleFullscreen() {
-    if (
-      !document.fullscreenElement &&
-      /* alternative standard method */ !document.mozFullScreenElement &&
-      !document.webkitFullscreenElement
-    ) {
-      // current working methods
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen()
-      } else if (document.documentElement.mozRequestFullScreen) {
-        document.documentElement.mozRequestFullScreen()
-      } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen(
-          Element.ALLOW_KEYBOARD_INPUT
-        )
-      }
-    } else {
-      if (document.cancelFullScreen) {
-        document.cancelFullScreen()
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen()
-      } else if (document.webkitCancelFullScreen) {
-        document.webkitCancelFullScreen()
-      }
-    }
-  }
   
-
   return (
     <React.Fragment>
       <header id="page-topbar">
@@ -78,33 +50,9 @@ const Header = props => {
                 </span>
               </Link>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  props.toggleLeftmenu(!props.leftMenu)
-                }}
-                className="btn btn-sm me-2 font-size-24 d-lg-none header-item waves-effect waves-light"
-                id="vertical-menu-btn"
-              >
-                <i className="mdi mdi-menu"></i>
-              </button>
-              </div>
-            <div className="d-flex">
-            <form className="app-search d-none d-lg-block">
-                <div className="position-relative">
-                    <input type="text" className="form-control" placeholder="Search..." />
-                    <span className="fa fa-search"></span>
-                </div>
-            </form>
-            <LanguageDropdown />
-            <div className="dropdown d-none d-lg-inline-block">
-                <button type="button" className="btn header-item noti-icon waves-effect" onClick={() => {
-                    toggleFullscreen()
-                  }} data-bs-toggle="fullscreen">
-                    <i className="mdi mdi-fullscreen"></i>
-                </button>
-            </div>
-            <NotificationDropdown />      
+              
+            
+            
             <ProfileMenu />        
             <div className="dropdown d-inline-block">
                 <button

@@ -154,32 +154,12 @@ const SidebarContent = props => {
               </Link>
             </li>
 
-            {/*<li>
-              <Link to="/calendario" className=" waves-effect">
-                <i className="ti-calendar"></i>
-                <span>{props.t("Calendario")}</span>
-              </Link>
-            </li> */}
-
             <li>
               <Link to="/Planificacion" >
                 <i className="ti-bar-chart"></i>
                 <span>{props.t("Planificación y Analitica")}</span>
               </Link>
-              {/*<ul className="sub-menu" aria-expanded="false">
-                <li>
-                  <Link to="/publicacionsimultanea">{props.t("Publicacion simultanea en varios canales digitales")}</Link>
-                </li>
-                <li>
-                  <Link to="/analisis">{props.t("Analisis de estadistica en tiempo real")} </Link>
-                </li>
-                <li>
-                  <Link to="/gestion">{props.t("Gestion de comentarios y reseñas")} </Link>
-                </li>
-                <li>
-                  <Link to="/reportes">{props.t("Reportes mensuales de rendimiento")} </Link>
-                  </li>
-              </ul>*/}
+              
             </li>
             <li>
             <Link to="/Plantillas" >

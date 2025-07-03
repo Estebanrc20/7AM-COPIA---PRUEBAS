@@ -14,98 +14,191 @@ import {
   Input
 } from "reactstrap";
 
-// Formik validation
 import * as Yup from "yup";
 import { useFormik } from "formik";
-
-// Redux
 import { connect, useDispatch } from "react-redux";
 import withRouter from 'components/Common/withRouter';
-
-//Import Breadcrumb
 import Breadcrumb from "../../components/Common/Breadcrumb";
-
-import avatar from "../../assets/images/users/user-4.jpg";
-// actions
 import { editProfile, resetProfileFlag } from "../../store/actions";
+import { supabase } from "../../supabaseClient";
 
 const PerfilUsuario = props => {
   const dispatch = useDispatch();
 
-  const [email, setemail] = useState("");
-  const [name, setname] = useState("");
-  const [idx, setidx] = useState(1);
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [idx, setIdx] = useState(1);
+  const [initial, setInitial] = useState("");
+  const [bgColor, setBgColor] = useState("#6C63FF");
+  const [profilePic, setProfilePic] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const generateRandomColor = () => {
+    const colors = [
+      "#6C63FF", "#FF6B6B", "#4DD0E1", "#81C784", "#BA68C8", "#FFD54F", "#A1887F",
+      "#4FC3F7", "#81D4FA", "#FFB74D", "#FF8A65"
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
 
   useEffect(() => {
-    if (localStorage.getItem("authUser")) {
-      const obj = JSON.parse(localStorage.getItem("authUser"));
-      if (process.env.REACT_APP_DEFAULTAUTH === "firebase") {
-        setname(obj.displayName);
-        setemail(obj.email);
-        setidx(obj.uid || 1);
-      } else if (
-        process.env.REACT_APP_DEFAULTAUTH === "fake" ||
-        process.env.REACT_APP_DEFAULTAUTH === "jwt"
-      ) {
-        setname(obj.username);
-        setemail(obj.email);
-        setidx(obj.uid || 1);
+    const fetchUser = async () => {
+      const authUser = JSON.parse(localStorage.getItem("authUser"));
+      if (!authUser) {
+        setLoading(false);
+        return;
       }
-      setTimeout(() => {
-        props.resetProfileFlag();
-      }, 3000);
-    }
+
+      const email = authUser.email;
+      setEmail(email);
+      setIdx(authUser.uid || 1);
+
+      const { data, error } = await supabase
+        .from("users_data")
+        .select("nombre, foto_perfil")
+        .eq("email", email)
+        .single();
+
+      if (!error && data) {
+        const nombre = data.nombre || "";
+        const userInitial = nombre.charAt(0).toUpperCase();
+
+        setName(nombre);
+        setInitial(userInitial);
+        localStorage.setItem("username", nombre);
+        localStorage.setItem("userInitial", userInitial);
+
+        let color = localStorage.getItem("userColor");
+        if (!color) {
+          color = generateRandomColor();
+          localStorage.setItem("userColor", color);
+        }
+        setBgColor(color);
+
+        // Si hay foto de perfil, usarla
+        if (data.foto_perfil) {
+          setProfilePic(data.foto_perfil);
+          localStorage.setItem("profilePic", data.foto_perfil);
+        } else {
+          // Si no hay foto, borrar la guardada (por si se quitó)
+          localStorage.removeItem("profilePic");
+          setProfilePic("");
+        }
+      }
+
+      setLoading(false);
+    };
+
+    fetchUser();
+
+    const handlePicUpdate = () => {
+      const nuevaFoto = localStorage.getItem("profilePic");
+      setProfilePic(nuevaFoto || "");
+    };
+
+    window.addEventListener("profilePicUpdated", handlePicUpdate);
+
+    setTimeout(() => {
+      props.resetProfileFlag();
+    }, 3000);
+
+    return () => {
+      window.removeEventListener("profilePicUpdated", handlePicUpdate);
+    };
   }, [props.success]);
 
-
   const validation = useFormik({
-    // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
-
     initialValues: {
-      username: name || '',
+      username: "",
       idx: idx || '',
     },
     validationSchema: Yup.object({
       username: Yup.string().required("Por favor, introduzca su nombre de usuario"),
     }),
-    onSubmit: (values) => {
-      dispatch(editProfile(values));
+    onSubmit: async (values) => {
+      const { username } = values;
+      const authUser = JSON.parse(localStorage.getItem("authUser"));
+      const email = authUser?.email;
+
+      if (email) {
+        const { error } = await supabase
+          .from("users_data")
+          .update({ nombre: username })
+          .eq("email", email);
+
+        if (!error) {
+          const userInitial = username.charAt(0).toUpperCase();
+          localStorage.setItem("username", username);
+          localStorage.setItem("userInitial", userInitial);
+          setName(username);
+          setInitial(userInitial);
+        }
+      }
     }
   });
 
   document.title = "Perfil | 7AM Digital";
+
+  if (loading) return null;
+
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid>
-          {/* Render Breadcrumb */}
           <Breadcrumb title="7AM Digital" breadcrumbItem="Perfil" />
 
           <Row>
             <Col lg="12">
-              {props.error && props.error ? (
-                <Alert color="danger">{props.error}</Alert>
-              ) : null}
-              {props.success ? (
+              {props.error && (
+                <Alert color="danger">
+                  {typeof props.error === "string"
+                    ? props.error
+                    : props.error.message || "Ocurrió un error"}
+                </Alert>
+              )}
+              {props.success && (
                 <Alert color="success">{props.success}</Alert>
-              ) : null}
+              )}
 
               <Card>
                 <CardBody>
                   <div className="d-flex">
                     <div className="mx-3">
-                      <img
-                        src={avatar}
-                        alt=""
-                        className="avatar-md rounded-circle img-thumbnail"
-                      />
+                      {profilePic ? (
+                        <img
+                          src={profilePic}
+                          alt="foto"
+                          style={{
+                            width: "60px",
+                            height: "60px",
+                            borderRadius: "50%",
+                            objectFit: "cover"
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: "60px",
+                            height: "60px",
+                            borderRadius: "50%",
+                            backgroundColor: bgColor,
+                            color: "#fff",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontWeight: "bold",
+                            fontSize: "24px"
+                          }}
+                        >
+                          {initial}
+                        </div>
+                      )}
                     </div>
                     <div className="align-self-center flex-1">
                       <div className="text-muted">
                         <h5>{name}</h5>
                         <p className="mb-1">{email}</p>
-                        <p className="mb-0">Id no: #{idx}</p>
                       </div>
                     </div>
                   </div>
@@ -114,12 +207,10 @@ const PerfilUsuario = props => {
             </Col>
           </Row>
 
-          <h4 className="card-title mb-4">Cambiar nombre de usuario
-          </h4>
+          <h4 className="card-title mb-4">Cambiar nombre de usuario</h4>
 
           <Card>
             <CardBody>
-
               <Form
                 className="form-horizontal"
                 onSubmit={(e) => {
@@ -129,12 +220,11 @@ const PerfilUsuario = props => {
                 }}
               >
                 <div className="form-group">
-                  <Label className="form-label">Nombre de usuario
-                  </Label>
+                  <Label className="form-label">Nombre de usuario</Label>
                   <Input
                     name="username"
                     className="form-control"
-                    placeholder="Enter User Name"
+                    placeholder="Introduzca el nombre de usuario"
                     type="text"
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
@@ -150,7 +240,7 @@ const PerfilUsuario = props => {
                 </div>
                 <div className="text-center mt-4">
                   <Button type="submit" color="danger">
-                  Editar nombre de usuario
+                    Editar nombre de usuario
                   </Button>
                 </div>
               </Form>

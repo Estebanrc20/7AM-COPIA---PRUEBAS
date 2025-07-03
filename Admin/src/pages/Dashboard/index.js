@@ -5,12 +5,14 @@ import {
   Row,
   Col,
   Card,
-  CardBody
+  CardBody,
+  Button
 } from "reactstrap";
 import { supabase } from "../../supabaseClient";
 
 const Dashboard = () => {
   const [userName, setUserName] = useState("");
+  const [hoveredBtn, setHoveredBtn] = useState(null); // Nuevo estado para hover
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -37,6 +39,18 @@ const Dashboard = () => {
 
   document.title = "Dashboard | 7 AM Digital";
 
+  // Estilo dinámico del botón
+  const getButtonStyle = (hover) => ({
+    backgroundColor: hover ? "#5951e6" : "#6C63FF",
+    borderColor: "#6C63FF",
+    color: "#fff",
+    borderRadius: "0.5rem",
+    padding: "8px 20px",
+    marginTop: "1rem",
+    transition: "all 0.3s ease-in-out",
+    cursor: "pointer"
+  });
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -54,7 +68,7 @@ const Dashboard = () => {
             </Row>
           </div>
 
-          {/* Card de bienvenida (con más espacio) */}
+          {/* Card de bienvenida */}
           <Row className="justify-content-center mb-5 mt-2">
             <Col md={10} lg={8}>
               <Card
@@ -81,7 +95,7 @@ const Dashboard = () => {
             </Col>
           </Row>
 
-          {/* Tarjetas con diseño más llamativo */}
+          {/* Tarjetas con botones dinámicos */}
           <Row>
             {/* Tarjeta 1 */}
             <Col md={4} className="mb-4">
@@ -98,6 +112,13 @@ const Dashboard = () => {
                   <h5 className="text-primary fw-bold">CONTENIDO REDES SOCIALES</h5>
                   <p className="fw-semibold">Haz crecer tus redes</p>
                   <p>Publica contenido organizado sobre temas relacionados con tu negocio y las tendencias.</p>
+                  <Button
+                    style={getButtonStyle(hoveredBtn === 1)}
+                    onMouseEnter={() => setHoveredBtn(1)}
+                    onMouseLeave={() => setHoveredBtn(null)}
+                  >
+                    Ir ahora
+                  </Button>
                 </CardBody>
               </Card>
             </Col>
@@ -117,6 +138,13 @@ const Dashboard = () => {
                   <h5 className="text-primary fw-bold">BLOG WEB CON AJUSTES SEO</h5>
                   <p className="fw-semibold">Aprovecha tu sitio web</p>
                   <p>Artículos pensados para mejorar tu visibilidad y atraer clientes potenciales.</p>
+                  <Button
+                    style={getButtonStyle(hoveredBtn === 2)}
+                    onMouseEnter={() => setHoveredBtn(2)}
+                    onMouseLeave={() => setHoveredBtn(null)}
+                  >
+                    Ir ahora
+                  </Button>
                 </CardBody>
               </Card>
             </Col>
@@ -136,6 +164,13 @@ const Dashboard = () => {
                   <h5 className="text-primary fw-bold">WHATSAPP ENVÍOS MASIVOS</h5>
                   <p className="fw-semibold">Marketing por WhatsApp</p>
                   <p>Mensajes directos para atraer clientes y promocionar tus servicios o productos.</p>
+                  <Button
+                    style={getButtonStyle(hoveredBtn === 3)}
+                    onMouseEnter={() => setHoveredBtn(3)}
+                    onMouseLeave={() => setHoveredBtn(null)}
+                  >
+                    Ir ahora
+                  </Button>
                 </CardBody>
               </Card>
             </Col>

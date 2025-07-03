@@ -8,9 +8,6 @@ import Authmiddleware from "./routes/middleware/Authmiddleware";
 import NonAuthLayout from "./components/NonAuthLayout";
 
 import "./assets/scss/theme.scss";
-import fakeBackend from "./helpers/AuthType/fakeBackend";
-
-fakeBackend();
 
 const App = () => {
   return (

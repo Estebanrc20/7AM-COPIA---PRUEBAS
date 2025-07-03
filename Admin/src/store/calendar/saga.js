@@ -21,14 +21,6 @@ import {
   getCategoriesFail,
 } from "./actions"
 
-//Include Both Helper File with needed methods
-import {
-  getEvents,
-  addNewEvent,
-  updateEvent,
-  deleteEvent,
-  getCategories,
-} from "../../helpers/fakebackend_helper"
 
 function* fetchEvents() {
   try {

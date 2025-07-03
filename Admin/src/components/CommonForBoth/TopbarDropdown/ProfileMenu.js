@@ -9,26 +9,83 @@ import {
 import { withTranslation } from "react-i18next";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../../../supabaseClient"; // Asegúrate que la ruta sea correcta
-import user1 from "../../../assets/images/users/user-4.jpg";
+import { supabase } from "../../../supabaseClient";
 
 const ProfileMenu = props => {
   const [menu, setMenu] = useState(false);
-  const [username, setusername] = useState("Admin");
-  const navigate = useNavigate(); // para redireccionar
+  const [username, setUsername] = useState(localStorage.getItem("username") || "");
+  const [initial, setInitial] = useState(localStorage.getItem("userInitial") || "");
+  const [bgColor, setBgColor] = useState(localStorage.getItem("userColor") || "#6C63FF");
+  const [profilePic, setProfilePic] = useState(localStorage.getItem("profilePic") || "");
+  const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
+  const generateRandomColor = () => {
+    const colors = [
+      "#6C63FF", "#FF6B6B", "#4DD0E1", "#81C784", "#BA68C8", "#FFD54F", "#A1887F", "#4FC3F7", "#81D4FA", 
+      "#FFB74D", "#FF8A65"
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
 
   useEffect(() => {
-    if (localStorage.getItem("authUser")) {
-      const obj = JSON.parse(localStorage.getItem("authUser"));
-      setusername(obj.username || obj.displayName || "Usuario");
-    }
+    const fetchUserData = async () => {
+      const authUser = JSON.parse(localStorage.getItem("authUser"));
+      if (!authUser) return;
+
+      const email = authUser.email;
+
+      const { data, error } = await supabase
+        .from("users_data")
+        .select("nombre, foto_perfil")
+        .eq("email", email)
+        .single();
+
+      if (!error && data) {
+        const nombre = data.nombre || "Usuario";
+        const userInitial = nombre.trim().charAt(0).toUpperCase();
+
+        let color = localStorage.getItem("userColor");
+        if (!color) {
+          color = generateRandomColor();
+          localStorage.setItem("userColor", color);
+        }
+
+        setUsername(nombre);
+        setInitial(userInitial);
+        setBgColor(color);
+
+        localStorage.setItem("username", nombre);
+        localStorage.setItem("userInitial", userInitial);
+        localStorage.setItem("userColor", color);
+
+        if (data.foto_perfil) {
+          setProfilePic(data.foto_perfil);
+          localStorage.setItem("profilePic", data.foto_perfil);
+        }
+      }
+
+      setLoading(false);
+    };
+
+    fetchUserData();
   }, [props.success]);
 
   const logout = async () => {
     await supabase.auth.signOut();
     localStorage.removeItem("authUser");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userInitial");
+    localStorage.removeItem("userColor");
+    localStorage.removeItem("profilePic");
     navigate("/login", { replace: true });
   };
+
+  // Evitar que se vea la U mientras se carga
+  if (loading && !initial) {
+    return null;
+  }
 
   return (
     <React.Fragment>
@@ -41,18 +98,60 @@ const ProfileMenu = props => {
           className="btn header-item waves-effect"
           id="page-header-user-dropdown"
           tag="button"
+          title={username}
         >
-          <img
-            className="rounded-circle header-profile-user"
-            src={user1}
-            alt="Header Avatar"
-          />
+          {profilePic ? (
+            <img
+              src={profilePic}
+              alt="Perfil"
+              className="rounded-circle"
+              style={{
+                width: "36px",
+                height: "36px",
+                objectFit: "cover",
+              }}
+            />
+          ) : initial ? (
+            <div
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                backgroundColor: bgColor,
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "bold",
+                fontSize: "16px"
+              }}
+              title={username}
+            >
+              {initial}
+            </div>
+          ) : (
+            <div
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "50%",
+                backgroundColor: "#ced4da"
+              }}
+            />
+          )}
         </DropdownToggle>
+
         <DropdownMenu className="dropdown-menu-end">
           <DropdownItem tag="a" href="/PerfilUsuario">
             <i className="mdi mdi-account-circle font-size-17 align-middle me-1" />
-            {props.t("Perfil")}
+            {props.t("Ver Perfil")}
           </DropdownItem>
+
+          <DropdownItem tag="a" href="/EditarPerfil">
+            <i className="mdi mdi-account-edit font-size-17 align-middle me-1" />
+            {props.t("Editar Perfil")}
+          </DropdownItem>
+
           <div className="dropdown-divider" />
           <DropdownItem onClick={logout} className="text-danger">
             <i className="bx bx-power-off font-size-17 align-middle me-1 text-danger" />
