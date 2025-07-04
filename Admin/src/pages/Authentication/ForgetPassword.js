@@ -7,12 +7,16 @@ import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import logoSm from "../../assets/images/logo7amblanco.png";
 import bannerBg from "../../assets/images/Banner1.png";
-
-import { supabase } from "../../supabaseClient"; // Asegúrate de tener esta importación correcta
+import { supabase } from "../../supabaseClient";
 
 const ForgetPasswordPage = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  const redirectTo =
+    process.env.NODE_ENV === "production"
+      ? "https://7-am-copia-pruebas.vercel.app/ResetPassword"
+      : "http://localhost:3000/ResetPassword";
 
   const validation = useFormik({
     initialValues: {
@@ -24,8 +28,9 @@ const ForgetPasswordPage = () => {
     onSubmit: async (values) => {
       setMessage("");
       setError("");
+
       const { data, error } = await supabase.auth.resetPasswordForEmail(values.email, {
-        redirectTo: `${window.location.origin}/ResetPassword`, // Cambia esta URL si tienes una ruta específica
+        redirectTo, // ✅ ahora dinámico según el entorno
       });
 
       if (error) {
