@@ -11,6 +11,7 @@ import Login from "../pages/Authentication/Login";
 import Logout from "../pages/Authentication/Logout";
 import Register from "../pages/Authentication/Register";
 import ForgetPwd from "../pages/Authentication/ForgetPassword";
+import ResetPasswordPage from "pages/Authentication/ResetPassword";
 
 
 // Dashboard
@@ -27,6 +28,7 @@ import Ideas from "../pages/Ideas";
 
 //ArticulosBlog
 import ArticulosDelBlog from "../pages/ArticulosDelBlog";
+import { components } from "react-select";
 
 
 
@@ -63,6 +65,7 @@ const authRoutes = [
   { path: "/login", component: <Login /> },
   { path: "/forgot-password", component: <ForgetPwd /> },
   { path: "/register", component: <Register /> },
+  { path: "/resetpassword", component: <ResetPasswordPage />},
 
 
   

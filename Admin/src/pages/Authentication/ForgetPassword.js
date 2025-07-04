@@ -1,50 +1,54 @@
-import PropTypes from 'prop-types';
-import React from "react";
+import React, { useState } from "react";
 import {
-  Row, Col, Alert, Card, CardBody, Container, Form, FormFeedback, Label, Input
+  Row, Col, Alert, Card, CardBody, Container, Form, FormFeedback, Label, Input,
 } from "reactstrap";
-
 import * as Yup from "yup";
 import { useFormik } from "formik";
-
-import { connect, useDispatch } from "react-redux";
-import { Link } from 'react-router-dom';
-import withRouter from 'components/Common/withRouter';
-
-import { userForgetPassword } from "../../store/actions";
+import { Link } from "react-router-dom";
 import logoSm from "../../assets/images/logo7amblanco.png";
-import bannerBg from "../../assets/images/Banner1.png"; // ✅ Importa la imagen de fondo
+import bannerBg from "../../assets/images/Banner1.png";
 
-const ForgetPasswordPage = props => {
-  const dispatch = useDispatch();
+import { supabase } from "../../supabaseClient"; // Asegúrate de tener esta importación correcta
+
+const ForgetPasswordPage = () => {
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const validation = useFormik({
-    enableReinitialize: true,
     initialValues: {
       email: '',
     },
     validationSchema: Yup.object({
-      email: Yup.string().required("Por favor, introduzca su correo electrónico"),
+      email: Yup.string().email("Correo inválido").required("Por favor, introduzca su correo electrónico"),
     }),
-    onSubmit: (values) => {
-      dispatch(userForgetPassword(values, props.history));
+    onSubmit: async (values) => {
+      setMessage("");
+      setError("");
+      const { data, error } = await supabase.auth.resetPasswordForEmail(values.email, {
+        redirectTo: `${window.location.origin}/ResetPassword`, // Cambia esta URL si tienes una ruta específica
+      });
+
+      if (error) {
+        setError("Error al enviar el correo. Verifica el correo ingresado.");
+      } else {
+        setMessage("Se ha enviado un enlace de restablecimiento a tu correo.");
+      }
     }
   });
 
   document.title = "Olvidar contraseña | 7AM Digital";
 
-  // ✅ Estilos de fondo e iluminación
   const backgroundStyle = {
-  backgroundImage: `url(${bannerBg})`,
-  backgroundRepeat: "no-repeat",
-  backgroundSize: "cover", // <-- clave aquí
-  backgroundPosition: "center center", // <-- aseguras que se centre bien
-  minHeight: "100vh",
-  width: "100%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};
+    backgroundImage: `url(${bannerBg})`,
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover",
+    backgroundPosition: "center center",
+    minHeight: "100vh",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  };
 
   const overlayStyle = {
     width: "100%",
@@ -54,103 +58,63 @@ const ForgetPasswordPage = props => {
   };
 
   return (
-    <React.Fragment>
-      <div style={backgroundStyle}>
-        <div style={overlayStyle}>
-          <div className="home-btn d-none d-sm-block">
-            <Link to="/" className="text-light">
-              <i className="fas fa-home h2"></i>
-            </Link>
-          </div>
-          <div className="account-pages my-5 pt-5">
-            <Container>
-              <Row className="justify-content-center">
-                <Col md={8} lg={6} xl={4}>
-                  <Card className="overflow-hidden">
-                    <div className="bg-primary">
-                      <div className="text-primary text-center p-4">
-                        <h5 className="text-white font-size-20 p-2">Olvidé mi contraseña</h5>
-                        <Link to="/index">
-                          <img src={logoSm} height="45" alt="logo" />
-                        </Link>
-                      </div>
+    <div style={backgroundStyle}>
+      <div style={overlayStyle}>
+        <div className="account-pages my-5 pt-5">
+          <Container>
+            <Row className="justify-content-center">
+              <Col md={8} lg={6} xl={4}>
+                <Card className="overflow-hidden">
+                  <div className="bg-primary">
+                    <div className="text-primary text-center p-4">
+                      <h5 className="text-white font-size-20 p-2">Olvidé mi contraseña</h5>
+                      <Link to="/">
+                        <img src={logoSm} height="45" alt="logo" />
+                      </Link>
                     </div>
-
-                    <CardBody className="p-4">
-                      {props.forgetError && (
-                        <Alert color="danger" className="mt-4">
-                          {props.forgetError}
-                        </Alert>
-                      )}
-
-                      {props.forgetSuccessMsg && (
-                        <Alert color="success" className="mt-4">
-                          {props.forgetSuccessMsg}
-                        </Alert>
-                      )}
-
-                      <Form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          validation.handleSubmit();
-                          return false;
-                        }}
-                        className="mt-4"
-                      >
-                        <div className="mb-3">
-                          <Label className="form-label" htmlFor="useremail">Correo electrónico</Label>
-                          <Input
-                            name="email"
-                            className="form-control"
-                            placeholder="Ingresa tu correo electrónico"
-                            type="email"
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.email || ""}
-                            invalid={validation.touched.email && !!validation.errors.email}
-                          />
-                          {validation.touched.email && validation.errors.email && (
-                            <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
-                          )}
-                        </div>
-
-                        <div className="row mb-0">
-                          <div className="col-12 text-end">
-                            <button className="btn btn-primary w-md waves-effect waves-light" type="submit">
-                              Restaurar
-                            </button>
-                          </div>
-                        </div>
-                      </Form>
-                    </CardBody>
-                  </Card>
-
-                  <div className="mt-5 text-center text-white">
-                    <p>¿Lo recuerdas? <Link to="/login" className="fw-medium text-info"> Iniciar sesión aquí </Link></p>
-                    <p>© {new Date().getFullYear()} 7AM Digital</p>
                   </div>
-                </Col>
-              </Row>
-            </Container>
-          </div>
+
+                  <CardBody className="p-4">
+                    {error && <Alert color="danger">{error}</Alert>}
+                    {message && <Alert color="success">{message}</Alert>}
+
+                    <Form onSubmit={validation.handleSubmit} className="mt-4">
+                      <div className="mb-3">
+                        <Label htmlFor="useremail">Correo electrónico</Label>
+                        <Input
+                          name="email"
+                          placeholder="Ingresa tu correo electrónico"
+                          type="email"
+                          onChange={validation.handleChange}
+                          onBlur={validation.handleBlur}
+                          value={validation.values.email}
+                          invalid={validation.touched.email && !!validation.errors.email}
+                        />
+                        {validation.touched.email && validation.errors.email && (
+                          <FormFeedback>{validation.errors.email}</FormFeedback>
+                        )}
+                      </div>
+
+                      <div className="text-end">
+                        <button type="submit" className="btn btn-primary w-md">
+                          Restaurar
+                        </button>
+                      </div>
+                    </Form>
+                  </CardBody>
+                </Card>
+
+                <div className="mt-5 text-center text-white">
+                  <p>¿Lo recuerdas? <Link to="/login" className="fw-medium text-info">Inicia sesión aquí</Link></p>
+                  <p>© {new Date().getFullYear()} 7AM Digital</p>
+                </div>
+              </Col>
+            </Row>
+          </Container>
         </div>
       </div>
-    </React.Fragment>
+    </div>
   );
 };
 
-ForgetPasswordPage.propTypes = {
-  forgetError: PropTypes.any,
-  forgetSuccessMsg: PropTypes.any,
-  history: PropTypes.object,
-  userForgetPassword: PropTypes.func
-};
-
-const mapStatetoProps = state => {
-  const { forgetError, forgetSuccessMsg } = state.ForgetPassword;
-  return { forgetError, forgetSuccessMsg };
-};
-
-export default withRouter(
-  connect(mapStatetoProps, { userForgetPassword })(ForgetPasswordPage)
-);
+export default ForgetPasswordPage;
