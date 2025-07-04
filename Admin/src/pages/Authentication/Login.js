@@ -55,16 +55,18 @@ const Login = () => {
     checkUser();
   }, [navigate]);
 
+  // ✅ Ajuste del fondo para eliminar franjas arriba/abajo
   const backgroundStyle = {
-    backgroundImage: `url(${bannerBg})`,
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "center",
-    minHeight: "100vh",
-    display: "fixed",
-    alignItems: "center",
-    justifyContent: "center",
-  };
+  backgroundImage: `url(${bannerBg})`,
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover", // <-- clave aquí
+  backgroundPosition: "center center", // <-- aseguras que se centre bien
+  minHeight: "100vh",
+  width: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
 
   const overlayStyle = {
     width: "100%",

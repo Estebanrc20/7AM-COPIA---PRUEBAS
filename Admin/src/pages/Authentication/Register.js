@@ -69,14 +69,16 @@ const Register = () => {
   }, []);
 
   const backgroundStyle = {
-    backgroundImage: `url(${bannerBg})`,
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  };
+  backgroundImage: `url(${bannerBg})`,
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover", // <-- clave aquí
+  backgroundPosition: "center center", // <-- aseguras que se centre bien
+  minHeight: "100vh",
+  width: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+};
 
   const overlayStyle = {
     width: "100%",
