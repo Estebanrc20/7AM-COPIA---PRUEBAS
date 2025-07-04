@@ -58,9 +58,10 @@ const Login = () => {
   const backgroundStyle = {
     backgroundImage: `url(${bannerBg})`,
     backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
     minHeight: "100vh",
-    display: "flex",
+    display: "fixed",
     alignItems: "center",
     justifyContent: "center",
   };
