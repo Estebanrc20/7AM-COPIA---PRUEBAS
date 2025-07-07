@@ -133,7 +133,7 @@ const Register = () => {
                   }}
                 >
                   <div className="mb-3">
-                    <Label htmlFor="useremail">Correo electrónico</Label>
+                    <Label htmlFor="useremail" className="text-white">Correo electrónico</Label>
                     <Input
                       name="email"
                       type="email"
@@ -148,7 +148,7 @@ const Register = () => {
                   </div>
 
                   <div className="mb-3">
-                    <Label htmlFor="username">Nombre de usuario</Label>
+                    <Label htmlFor="username" className="text-white">Nombre de usuario</Label>
                     <Input
                       name="username"
                       type="text"
@@ -163,7 +163,7 @@ const Register = () => {
                   </div>
 
                   <div className="mb-3">
-                    <Label htmlFor="userpassword">Contraseña</Label>
+                    <Label htmlFor="userpassword" className="text-white">Contraseña</Label>
                     <Input
                       name="password"
                       type="password"

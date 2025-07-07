@@ -47,7 +47,6 @@ const Login = () => {
   useEffect(() => {
     document.title = "Iniciar Sesión | 7AM Digital";
 
-    // Precarga la imagen de fondo
     const img = new Image();
     img.src = bannerBg;
 
@@ -62,7 +61,7 @@ const Login = () => {
 
   const backgroundStyle = {
     backgroundImage: `url(${bannerBg})`,
-    backgroundColor: "#000", // para evitar el gris por defecto
+    backgroundColor: "#000",
     backgroundRepeat: "no-repeat",
     backgroundSize: "cover",
     backgroundPosition: "center",
@@ -111,7 +110,7 @@ const Login = () => {
                   }}
                 >
                   <div className="mb-3">
-                    <Label htmlFor="email">Correo</Label>
+                    <Label htmlFor="email" className="text-white">Correo</Label>
                     <Input
                       id="email"
                       name="email"
@@ -126,7 +125,7 @@ const Login = () => {
                   </div>
 
                   <div className="mb-3">
-                    <Label htmlFor="password">Contraseña</Label>
+                    <Label htmlFor="password" className="text-white">Contraseña</Label>
                     <Input
                       id="password"
                       name="password"
@@ -149,7 +148,7 @@ const Login = () => {
                   <div className="mb-3 d-flex justify-content-between align-items-center">
                     <div className="form-check">
                       <input type="checkbox" className="form-check-input" id="remember" />
-                      <label className="form-check-label" htmlFor="remember">Recuérdame</label>
+                      <label className="form-check-label text-white" htmlFor="remember">Recuérdame</label>
                     </div>
                     <button type="submit" className="btn btn-primary w-md" disabled={loading}>
                       {loading ? <Spinner size="sm" color="light" /> : "Iniciar Sesión"}
@@ -157,7 +156,7 @@ const Login = () => {
                   </div>
 
                   <div className="text-center mt-4">
-                    <Link to="/forgot-password">
+                    <Link to="/forgot-password" className="text-white">
                       <i className="mdi mdi-lock"></i> ¿Olvidaste tu contraseña?
                     </Link>
                   </div>

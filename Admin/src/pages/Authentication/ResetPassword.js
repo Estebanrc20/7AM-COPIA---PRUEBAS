@@ -117,7 +117,7 @@ const ResetPasswordPage = () => {
 
                     <Form onSubmit={validation.handleSubmit} className="mt-3">
                       <div className="mb-3">
-                        <Label htmlFor="password">Nueva contraseña</Label>
+                        <Label htmlFor="password" className="text-white">Nueva contraseña</Label>
                         <Input
                           name="password"
                           type="password"

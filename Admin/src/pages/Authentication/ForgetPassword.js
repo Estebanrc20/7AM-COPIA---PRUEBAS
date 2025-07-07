@@ -96,7 +96,7 @@ const ForgetPasswordPage = () => {
 
                 <Form onSubmit={validation.handleSubmit} className="mt-4">
                   <div className="mb-3">
-                    <Label htmlFor="useremail">Correo electrónico</Label>
+                    <Label htmlFor="useremail" className="text-white">Correo electrónico</Label>
                     <Input
                       name="email"
                       placeholder="Ingresa tu correo electrónico"
