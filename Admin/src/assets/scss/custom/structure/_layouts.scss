@@ -1,44 +1,111 @@
-// 
+//
 // _layouts.scss
-// 
+//
 
 body[data-layout-size="boxed"] {
-    background-color: var(--#{$prefix}boxed-body-bg);
-    #layout-wrapper {
-        background-color: var(--#{$prefix}body-bg);
-        max-width: $boxed-layout-width;
-        margin: 0 auto;
-        box-shadow: var(--#{$prefix}box-shadow-sm);
-    }
+  background-color: var(--#{$prefix}boxed-body-bg);
 
-    #page-topbar {
-        max-width: $boxed-layout-width;
-        margin: 0 auto;
-    }
+  #layout-wrapper {
+    background-color: var(--#{$prefix}body-bg);
+    max-width: $boxed-layout-width;
+    margin: 0 auto;
+    box-shadow: var(--#{$prefix}box-shadow-sm);
+  }
 
+  #page-topbar {
+    max-width: $boxed-layout-width;
+    margin: 0 auto;
+  }
+
+  .footer {
+    margin: 0 auto;
+    max-width: calc(#{$boxed-layout-width} - #{$sidebar-width});
+  }
+
+  &.vertical-collpsed {
     .footer {
-        margin: 0 auto;
-        max-width: calc(#{$boxed-layout-width} - #{$sidebar-width});
+      max-width: calc(#{$boxed-layout-width} - #{$sidebar-collapsed-width});
     }
-
-    &.vertical-collpsed {
-        .footer {
-            max-width: calc(#{$boxed-layout-width} - #{$sidebar-collapsed-width});
-        }
-    }
+  }
 }
 
 // Horizontal Boxed Layout
+body[data-layout="horizontal"][data-layout-size="boxed"] {
+  #page-topbar,
+  #layout-wrapper,
+  .footer {
+    max-width: 100%;
+  }
 
-body[data-layout="horizontal"][data-layout-size="boxed"]{
-    #page-topbar, #layout-wrapper, .footer {
-        max-width: 100%;
+  #layout-wrapper {
+    box-shadow: none;
+  }
+
+  .container-fluid,
+  .navbar-header {
+    max-width: $boxed-layout-width;
+  }
+}
+
+// Sidebar collapse behavior (customizado)
+body.sidebar-collapsed,
+body.vertical-collpsed {
+  .vertical-menu {
+    width: 70px !important;
+    transition: all 0.3s ease;
+
+    .menu-title,
+    .menu-text {
+      display: none !important;
     }
 
-    #layout-wrapper {
-        box-shadow: none;
+    li > a {
+      justify-content: center;
+
+      i {
+        margin-right: 0 !important;
+      }
     }
-    .container-fluid, .navbar-header {
-        max-width: $boxed-layout-width;
-    }
+  }
+
+  .logo-text {
+    display: none !important;
+  }
+
+  .logo-icon {
+    display: inline-block !important;
+    margin-left: 5px;
+  }
+
+  .main-content {
+    margin-left: 70px !important;
+    transition: all 0.3s ease;
+  }
+}
+// Asegura que el botón de menú siempre esté visible en móvil
+@media (max-width: 768px) {
+  #vertical-menu-btn {
+    display: block !important;
+  }
+
+  body.sidebar-collapsed .vertical-menu {
+    transform: translateX(-100%); // Oculta el menú en móvil
+    transition: transform 0.3s ease;
+  }
+
+  body.sidebar-open .vertical-menu {
+    transform: translateX(0); // Muestra el menú en móvil
+  }
+
+  .vertical-menu {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 240px;
+    background-color: #2a2e39;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
 }

@@ -8,7 +8,7 @@ import {
   CardBody
 } from "reactstrap";
 
-const Dashboard = () => {
+const Home = () => {
   document.title = "Articulos del blog | 7 AM Digital";
 
   return (
@@ -35,10 +35,10 @@ const Dashboard = () => {
   );
 };
 
-Dashboard.propTypes = {
+Home.propTypes = {
   t: PropTypes.any
 };
 
-export default Dashboard;
+export default Home;
 
 

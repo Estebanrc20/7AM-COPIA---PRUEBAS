@@ -11,7 +11,7 @@ import {
 import MetricoolPanel from 'components/Metricool/MetricoolPanel';
 import { supabase } from '../../supabaseClient';
 
-const Dashboard = () => {
+const Home = () => {
   document.title = "Planificación y Analítica | 7 AM Digital";
 
   const [iframeUrl, setIframeUrl] = useState("");
@@ -48,7 +48,7 @@ const Dashboard = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-          <div className="page-title-box">
+          {/*<div className="page-title-box">
             <Row className="align-items-center">
               <Col md={8}>
                 <h6 className="page-title">Estadísticas de Metricool</h6>
@@ -57,7 +57,7 @@ const Dashboard = () => {
                 </ol>
               </Col>
             </Row>
-          </div>
+          </div> */}
           <Row>
             <Col md={12}>
               <Card>
@@ -72,12 +72,12 @@ const Dashboard = () => {
                         <strong>haz clic aquí:</strong>
                       </p>
                       <Button
-                        color="primary"
+                        style={{ backgroundColor: '#000b24', borderColor: '#000b24', color: 'white' }}
                         size="sm"
-                        onClick={() => window.open(iframeUrl, "_blank")}
-                      >
+                        onClick={() => window.open(iframeUrl, "_blank")}>
                         Ver en pantalla completa
                       </Button>
+
                     </div>
                   )}
                 </CardBody>
@@ -90,8 +90,8 @@ const Dashboard = () => {
   );
 };
 
-Dashboard.propTypes = {
+Home.propTypes = {
   t: PropTypes.any
 };
 
-export default Dashboard;
+export default Home;

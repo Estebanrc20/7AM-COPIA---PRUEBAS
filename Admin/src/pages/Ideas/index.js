@@ -9,7 +9,7 @@ import {
   CardBody
 } from "reactstrap";
 
-const Dashboard = props => {
+const Home = props => {
   const [menu, setMenu] = useState(false);
   const toggle = () => setMenu(!menu);
 
@@ -131,8 +131,8 @@ const Dashboard = props => {
   );
 };
 
-Dashboard.propTypes = {
+Home.propTypes = {
   t: PropTypes.any
 };
 
-export default Dashboard;
+export default Home;

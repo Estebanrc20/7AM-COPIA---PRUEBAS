@@ -37,7 +37,7 @@ const Login = () => {
         localStorage.removeItem("authUser");
       } else {
         localStorage.setItem("authUser", JSON.stringify(data.session?.user || data.user));
-        setTimeout(() => navigate("/dashboard"), 300);
+        setTimeout(() => navigate("/Home"), 300);
       }
 
       setLoading(false);
@@ -53,7 +53,7 @@ const Login = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        navigate("/dashboard");
+        navigate("/Home");
       }
     };
     checkUser();

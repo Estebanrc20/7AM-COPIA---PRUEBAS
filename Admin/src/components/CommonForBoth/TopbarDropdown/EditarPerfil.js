@@ -156,7 +156,9 @@ const EditarPerfil = () => {
             )}
 
             <div className="text-center">
-              <Button color="primary" type="submit">
+              <Button
+                type="submit"
+                style={{ backgroundColor: "#000b24", color: "#fff" }}>
                 Guardar cambios
               </Button>
             </div>

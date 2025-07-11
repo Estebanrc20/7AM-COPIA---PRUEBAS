@@ -1,10 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
-// import { withRouter } from "react-router-dom"
 import withRouter from "components/Common/withRouter";
-
-//i18n
 import { withTranslation } from "react-i18next";
 import SidebarContent from "./SidebarContent";
 
@@ -13,7 +10,7 @@ const Sidebar = props => {
     <React.Fragment>
       <div className="vertical-menu">
         <div data-simplebar className="h-100">
-          {props.type !== "condensed" ? <SidebarContent /> : <SidebarContent />}
+          <SidebarContent />
         </div>
       </div>
     </React.Fragment>
@@ -29,6 +26,7 @@ const mapStatetoProps = state => {
     layout: state.Layout,
   };
 };
+
 export default connect(
   mapStatetoProps,
   {}

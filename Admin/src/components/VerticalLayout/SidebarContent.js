@@ -1,16 +1,11 @@
 import PropTypes from "prop-types";
 import React, { useEffect, useCallback, useRef } from "react";
-
-// //Import Scrollbar
 import SimpleBar from "simplebar-react";
-
-// MetisMenu
 import MetisMenu from "metismenujs";
 import withRouter from "components/Common/withRouter";
 import { Link, useLocation } from "react-router-dom";
-
-//i18n
 import { withTranslation } from "react-i18next";
+import { UncontrolledTooltip } from "reactstrap";
 
 const SidebarContent = props => {
   const location = useLocation();
@@ -29,21 +24,19 @@ const SidebarContent = props => {
     if (parent) {
       parent.classList.add("mm-active");
       const parent2 = parent.parentElement;
-
       if (parent2) {
-        parent2.classList.add("mm-show"); // ul tag
-
-        const parent3 = parent2.parentElement; // li tag
+        parent2.classList.add("mm-show");
+        const parent3 = parent2.parentElement;
         if (parent3) {
-          parent3.classList.add("mm-active"); // li
-          parent3.childNodes[0].classList.add("mm-active"); //a
-          const parent4 = parent3.parentElement; // ul
+          parent3.classList.add("mm-active");
+          parent3.childNodes[0].classList.add("mm-active");
+          const parent4 = parent3.parentElement;
           if (parent4) {
-            parent4.classList.add("mm-show"); // ul
+            parent4.classList.add("mm-show");
             const parent5 = parent4.parentElement;
             if (parent5) {
-              parent5.classList.add("mm-show"); // li
-              parent5.childNodes[0].classList.add("mm-active"); // a tag
+              parent5.classList.add("mm-show");
+              parent5.childNodes[0].classList.add("mm-active");
             }
           }
         }
@@ -57,17 +50,15 @@ const SidebarContent = props => {
 
   const removeActivation = (items) => {
     for (var i = 0; i < items.length; ++i) {
-      var item = items[i];
-      const parent = items[i].parentElement;
+      const item = items[i];
+      const parent = item.parentElement;
 
-      if (item && item.classList.contains("active")) {
+      if (item.classList.contains("active")) {
         item.classList.remove("active");
       }
+
       if (parent) {
-        const parent2El =
-          parent.childNodes && parent.childNodes.lenght && parent.childNodes[1]
-            ? parent.childNodes[1]
-            : null;
+        const parent2El = parent.childNodes[1];
         if (parent2El && parent2El.id !== "side-menu") {
           parent2El.classList.remove("mm-show");
         }
@@ -77,19 +68,18 @@ const SidebarContent = props => {
 
         if (parent2) {
           parent2.classList.remove("mm-show");
-
           const parent3 = parent2.parentElement;
           if (parent3) {
-            parent3.classList.remove("mm-active"); // li
+            parent3.classList.remove("mm-active");
             parent3.childNodes[0].classList.remove("mm-active");
 
-            const parent4 = parent3.parentElement; // ul
+            const parent4 = parent3.parentElement;
             if (parent4) {
-              parent4.classList.remove("mm-show"); // ul
+              parent4.classList.remove("mm-show");
               const parent5 = parent4.parentElement;
               if (parent5) {
-                parent5.classList.remove("mm-show"); // li
-                parent5.childNodes[0].classList.remove("mm-active"); // a tag
+                parent5.classList.remove("mm-show");
+                parent5.childNodes[0].classList.remove("mm-active");
               }
             }
           }
@@ -100,25 +90,25 @@ const SidebarContent = props => {
 
   const activeMenu = useCallback(() => {
     const pathName = location.pathname;
-    const fullPath = pathName;
     let matchingMenuItem = null;
     const ul = document.getElementById("side-menu");
     const items = ul.getElementsByTagName("a");
     removeActivation(items);
 
     for (let i = 0; i < items.length; ++i) {
-      if (fullPath === items[i].pathname) {
+      if (pathName === items[i].pathname) {
         matchingMenuItem = items[i];
         break;
       }
     }
+
     if (matchingMenuItem) {
       activateParentDropdown(matchingMenuItem);
     }
   }, [path, activateParentDropdown]);
 
   useEffect(() => {
-    ref.current.recalculate();
+    ref.current?.recalculate();
   }, []);
 
   useEffect(() => {
@@ -140,47 +130,74 @@ const SidebarContent = props => {
     }
   }
 
+  const isCollapsed = document.body.classList.contains("vertical-collpsed");
+
   return (
     <React.Fragment>
       <SimpleBar style={{ maxHeight: "100%" }} ref={ref}>
         <div id="sidebar-menu">
           <ul className="metismenu list-unstyled" id="side-menu">
-            <li className="menu-title">{props.t("Principal")} </li>
+            <li className="menu-title">{props.t("Principal")}</li>
+
             <li>
-              <Link to="/dashboard" className="waves-effect">
+              <Link to="/Home" className="waves-effect" id="menu-home">
                 <i className="ti-home"></i>
-                <span className="badge rounded-pill bg-primary float-end"></span>
-                <span>{props.t("Dashboard")}</span>
+                {!isCollapsed && <span className="menu-text">{props.t("Home")}</span>}
               </Link>
+              {isCollapsed && (
+                <UncontrolledTooltip placement="right" target="menu-home">
+                  {props.t("Home")}
+                </UncontrolledTooltip>
+              )}
             </li>
 
             <li>
-              <Link to="/Planificacion" >
+              <Link to="/Planificacion" className="waves-effect" id="menu-plan">
                 <i className="ti-bar-chart"></i>
-                <span>{props.t("Planificación y Analitica")}</span>
+                {!isCollapsed && <span className="menu-text">{props.t("Planificación y Analitica")}</span>}
               </Link>
-              
-            </li>
-            <li>
-            <Link to="/Plantillas" >
-                <i className="ti-layout"></i>
-                <span>{props.t("Plantillas Canva")}</span>
-              </Link>
-              
-            </li>
-            <li>
-              <Link to="/Ideas" className=" waves-effect">
-                <i className="ti-light-bulb"></i>
-                <span>{props.t("Ideas de contenido")}</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/ArticulosDelBlog" className=" waves-effect">
-                <i className="ti-write"></i>
-                <span>{props.t("Articulos del blog")}</span>
-              </Link>
+              {isCollapsed && (
+                <UncontrolledTooltip placement="right" target="menu-plan">
+                  {props.t("Planificación y Analitica")}
+                </UncontrolledTooltip>
+              )}
             </li>
 
+            <li>
+              <Link to="/Plantillas" className="waves-effect" id="menu-plantillas">
+                <i className="ti-layout"></i>
+                {!isCollapsed && <span className="menu-text">{props.t("Plantillas Canva")}</span>}
+              </Link>
+              {isCollapsed && (
+                <UncontrolledTooltip placement="right" target="menu-plantillas">
+                  {props.t("Plantillas Canva")}
+                </UncontrolledTooltip>
+              )}
+            </li>
+
+            <li>
+              <Link to="/Ideas" className="waves-effect" id="menu-ideas">
+                <i className="ti-light-bulb"></i>
+                {!isCollapsed && <span className="menu-text">{props.t("Ideas de contenido")}</span>}
+              </Link>
+              {isCollapsed && (
+                <UncontrolledTooltip placement="right" target="menu-ideas">
+                  {props.t("Ideas de contenido")}
+                </UncontrolledTooltip>
+              )}
+            </li>
+
+            <li>
+              <Link to="/ArticulosDelBlog" className="waves-effect" id="menu-articulos">
+                <i className="ti-write"></i>
+                {!isCollapsed && <span className="menu-text">{props.t("Articulos del blog")}</span>}
+              </Link>
+              {isCollapsed && (
+                <UncontrolledTooltip placement="right" target="menu-articulos">
+                  {props.t("Articulos del blog")}
+                </UncontrolledTooltip>
+              )}
+            </li>
           </ul>
         </div>
       </SimpleBar>

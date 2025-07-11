@@ -65,9 +65,9 @@ const Navbar = (props) => {
             >
               <ul className="navbar-nav">
                 <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard">
+                  <Link className="nav-link" to="/Home">
                     <i className="ti-home me-2" />
-                    {props.t("Dashboard")} {props.menuOpen}
+                    {props.t("Home")} {props.menuOpen}
                   </Link>
                 </li>
 

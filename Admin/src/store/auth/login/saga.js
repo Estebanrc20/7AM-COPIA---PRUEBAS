@@ -29,7 +29,7 @@ function* loginUser({ payload: { user, history } }) {
       localStorage.setItem("authUser", JSON.stringify(response));
       yield put(loginSuccess(response));
     }
-    history("/dashboard");
+    history("/Home");
   } catch (error) {
     yield put(apiError(error));
   }

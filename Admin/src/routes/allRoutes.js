@@ -14,8 +14,8 @@ import ForgetPwd from "../pages/Authentication/ForgetPassword";
 import ResetPasswordPage from "pages/Authentication/ResetPassword";
 
 
-// Dashboard
-import Dashboard from "../pages/Dashboard/index";
+// Home
+import Home from "../pages/Home/index";
 
 // Planificacion
 import Planificacion from "../pages/Planificacion";
@@ -33,7 +33,7 @@ import { components } from "react-select";
 
 
 const userRoutes = [
-  { path: "/dashboard", component: <Dashboard /> },
+  { path: "/Home", component: <Home/> },
 
 
   // //perfil
@@ -57,7 +57,7 @@ const userRoutes = [
 
 
   // this route should be at the end of all other routes
-  { path: "/", component: <Dashboard /> },
+  { path: "/", component: <Home /> },
 ];
 
 const authRoutes = [

@@ -10,7 +10,7 @@ import {
 } from "reactstrap";
 import { supabase } from "../../supabaseClient";
 
-const Dashboard = () => {
+const Home = () => {
   const [userName, setUserName] = useState("");
   const [hoveredBtn, setHoveredBtn] = useState(null); // Nuevo estado para hover
 
@@ -37,11 +37,11 @@ const Dashboard = () => {
     fetchUserName();
   }, []);
 
-  document.title = "Dashboard | 7 AM Digital";
+  document.title = "Home | 7 AM Digital";
 
   // Estilo dinámico del botón
   const getButtonStyle = (hover) => ({
-    backgroundColor: hover ? "#5951e6" : "#6C63FF",
+    backgroundColor: hover ? "#000b24" : "#000b24",
     borderColor: "#6C63FF",
     color: "#fff",
     borderRadius: "0.5rem",
@@ -60,7 +60,7 @@ const Dashboard = () => {
           <div className="page-title-box mb-4">
             <Row className="align-items-center">
               <Col md={8}>
-                <h6 className="page-title">Dashboard</h6>
+                <h6 className="page-title">Home</h6>
                 <ol className="breadcrumb m-0">
                   <li className="breadcrumb-item active">7AM Digital</li>
                 </ol>
@@ -109,7 +109,7 @@ const Dashboard = () => {
                 }}
               >
                 <CardBody>
-                  <h5 className="text-primary fw-bold">CONTENIDO REDES SOCIALES</h5>
+                  <h5 style={{ color: "#000b24" }} className="fw-bold">CONTENIDO REDES SOCIALES</h5>
                   <p className="fw-semibold">Haz crecer tus redes</p>
                   <p>Publica contenido organizado sobre temas relacionados con tu negocio y las tendencias.</p>
                   <Button
@@ -135,7 +135,7 @@ const Dashboard = () => {
                 }}
               >
                 <CardBody>
-                  <h5 className="text-primary fw-bold">BLOG WEB CON AJUSTES SEO</h5>
+                  <h5 style={{ color: "#000b24" }} className="fw-bold">BLOG WEB CON AJUSTES SEO</h5>
                   <p className="fw-semibold">Aprovecha tu sitio web</p>
                   <p>Artículos pensados para mejorar tu visibilidad y atraer clientes potenciales.</p>
                   <Button
@@ -161,7 +161,7 @@ const Dashboard = () => {
                 }}
               >
                 <CardBody>
-                  <h5 className="text-primary fw-bold">WHATSAPP ENVÍOS MASIVOS</h5>
+                  <h5 style={{ color: "#000b24" }} className="fw-bold">WHATSAPP ENVÍOS MASIVOS</h5>
                   <p className="fw-semibold">Marketing por WhatsApp</p>
                   <p>Mensajes directos para atraer clientes y promocionar tus servicios o productos.</p>
                   <Button
@@ -181,8 +181,8 @@ const Dashboard = () => {
   );
 };
 
-Dashboard.propTypes = {
+Home.propTypes = {
   t: PropTypes.any
 };
 
-export default Dashboard;
+export default Home;

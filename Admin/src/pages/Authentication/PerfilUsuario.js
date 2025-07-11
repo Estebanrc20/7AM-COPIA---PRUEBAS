@@ -11,7 +11,8 @@ import {
   Form,
   FormFeedback,
   Label,
-  Input
+  Input,
+  FormGroup
 } from "reactstrap";
 
 import * as Yup from "yup";
@@ -27,11 +28,22 @@ const PerfilUsuario = props => {
 
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const [idx, setIdx] = useState(1);
   const [initial, setInitial] = useState("");
   const [bgColor, setBgColor] = useState("#6C63FF");
   const [profilePic, setProfilePic] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const [userData, setUserData] = useState({
+    sector: "",
+    descripcion_empresa: "",
+    propuesta_valor: "",
+    portafolio_comercial: "",
+    segmentacion_audiencia: "",
+    sitioWeb: "",
+  });
+
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [updateError, setUpdateError] = useState("");
 
   const generateRandomColor = () => {
     const colors = [
@@ -49,14 +61,13 @@ const PerfilUsuario = props => {
         return;
       }
 
-      const email = authUser.email;
-      setEmail(email);
-      setIdx(authUser.uid || 1);
+      const userEmail = authUser.email;
+      setEmail(userEmail);
 
       const { data, error } = await supabase
         .from("users_data")
-        .select("nombre, foto_perfil")
-        .eq("email", email)
+        .select("*")
+        .eq("email", userEmail)
         .single();
 
       if (!error && data) {
@@ -75,15 +86,22 @@ const PerfilUsuario = props => {
         }
         setBgColor(color);
 
-        // Si hay foto de perfil, usarla
         if (data.foto_perfil) {
           setProfilePic(data.foto_perfil);
           localStorage.setItem("profilePic", data.foto_perfil);
         } else {
-          // Si no hay foto, borrar la guardada (por si se quitó)
           localStorage.removeItem("profilePic");
           setProfilePic("");
         }
+
+        setUserData({
+          sector: data.sector || "",
+          descripcion_empresa: data.descripcion_empresa || "",
+          propuesta_valor: data.propuesta_valor || "",
+          portafolio_comercial: data.portafolio_comercial || "",
+          segmentacion_audiencia: data.segmentacion_audiencia || "",
+          sitioWeb: data.sitioWeb || "",
+        });
       }
 
       setLoading(false);
@@ -110,145 +128,196 @@ const PerfilUsuario = props => {
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
-      username: "",
-      idx: idx || '',
+      username: name,
+      ...userData
     },
     validationSchema: Yup.object({
-      username: Yup.string().required("Por favor, introduzca su nombre de usuario"),
+      username: Yup.string().required("Por favor, introduzca su nombre"),
+      sitioWeb: Yup.string().url("Debe ser una URL válida").nullable()
     }),
-    onSubmit: async (values) => {
-      const { username } = values;
-      const authUser = JSON.parse(localStorage.getItem("authUser"));
-      const email = authUser?.email;
+    onSubmit: async (values, { setSubmitting }) => {
+      if (!email) {
+        console.error("No se encontró el email del usuario.");
+        return;
+      }
 
-      if (email) {
-        const { error } = await supabase
-          .from("users_data")
-          .update({ nombre: username })
-          .eq("email", email);
+      const { error } = await supabase
+        .from("users_data")
+        .update({
+          nombre: values.username,
+          sector: values.sector || null,
+          descripcion_empresa: values.descripcion_empresa || null,
+          propuesta_valor: values.propuesta_valor || null,
+          portafolio_comercial: values.portafolio_comercial || null,
+          segmentacion_audiencia: values.segmentacion_audiencia || null,
+          sitioWeb: values.sitioWeb || null,
+        })
+        .eq("email", email);
 
-        if (!error) {
-          const userInitial = username.charAt(0).toUpperCase();
-          localStorage.setItem("username", username);
-          localStorage.setItem("userInitial", userInitial);
-          setName(username);
-          setInitial(userInitial);
-        }
+      setSubmitting(false);
+
+      if (!error) {
+        setName(values.username);
+        setUserData({
+          sector: values.sector,
+          descripcion_empresa: values.descripcion_empresa,
+          propuesta_valor: values.propuesta_valor,
+          portafolio_comercial: values.portafolio_comercial,
+          segmentacion_audiencia: values.segmentacion_audiencia,
+          sitioWeb: values.sitioWeb,
+        });
+
+        const userInitial = values.username.charAt(0).toUpperCase();
+        localStorage.setItem("username", values.username);
+        localStorage.setItem("userInitial", userInitial);
+        setInitial(userInitial);
+
+        setUpdateSuccess(true);
+        setTimeout(() => setUpdateSuccess(false), 3000);
+      } else {
+        console.error("Error al actualizar en Supabase:", error.message);
+        setUpdateError("No se pudieron guardar los cambios: " + error.message);
+        setTimeout(() => setUpdateError(""), 5000);
       }
     }
   });
 
-  document.title = "Perfil | 7AM Digital";
-
   if (loading) return null;
 
   return (
-    <React.Fragment>
-      <div className="page-content">
-        <Container fluid>
-          <Breadcrumb title="7AM Digital" breadcrumbItem="Perfil" />
+    <div className="page-content">
+      <Container fluid>
+        <Breadcrumb title="7AM Digital" breadcrumbItem="Perfil" />
 
-          <Row>
-            <Col lg="12">
-              {props.error && (
-                <Alert color="danger">
-                  {typeof props.error === "string"
-                    ? props.error
-                    : props.error.message || "Ocurrió un error"}
-                </Alert>
-              )}
-              {props.success && (
-                <Alert color="success">{props.success}</Alert>
-              )}
+        <Row>
+          <Col lg="12">
+            {props.error && (
+              <Alert color="danger">{props.error?.message || props.error}</Alert>
+            )}
+            {props.success && <Alert color="success">{props.success}</Alert>}
 
-              <Card>
-                <CardBody>
-                  <div className="d-flex">
-                    <div className="mx-3">
-                      {profilePic ? (
-                        <img
-                          src={profilePic}
-                          alt="foto"
-                          style={{
-                            width: "60px",
-                            height: "60px",
-                            borderRadius: "50%",
-                            objectFit: "cover"
-                          }}
-                        />
-                      ) : (
-                        <div
-                          style={{
-                            width: "60px",
-                            height: "60px",
-                            borderRadius: "50%",
-                            backgroundColor: bgColor,
-                            color: "#fff",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            fontWeight: "bold",
-                            fontSize: "24px"
-                          }}
-                        >
-                          {initial}
-                        </div>
-                      )}
-                    </div>
-                    <div className="align-self-center flex-1">
-                      <div className="text-muted">
-                        <h5>{name}</h5>
-                        <p className="mb-1">{email}</p>
-                      </div>
+            <Card>
+              <CardBody>
+                <div className="d-flex">
+                  <div className="mx-3">
+                    {profilePic ? (
+                      <img src={profilePic} alt="foto" style={{
+                        width: "60px",
+                        height: "60px",
+                        borderRadius: "50%",
+                        objectFit: "cover"
+                      }} />
+                    ) : (
+                      <div style={{
+                        width: "60px",
+                        height: "60px",
+                        borderRadius: "50%",
+                        backgroundColor: bgColor,
+                        color: "#fff",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontWeight: "bold",
+                        fontSize: "24px"
+                      }}>{initial}</div>
+                    )}
+                  </div>
+                  <div className="align-self-center flex-1">
+                    <div className="text-muted">
+                      <h5>{name}</h5>
+                      <p className="mb-1">{email}</p>
                     </div>
                   </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-
-          <h4 className="card-title mb-4">Cambiar nombre de usuario</h4>
-
-          <Card>
-            <CardBody>
-              <Form
-                className="form-horizontal"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  validation.handleSubmit();
-                  return false;
-                }}
-              >
-                <div className="form-group">
-                  <Label className="form-label">Nombre de usuario</Label>
-                  <Input
-                    name="username"
-                    className="form-control"
-                    placeholder="Introduzca el nombre de usuario"
-                    type="text"
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.username || ""}
-                    invalid={
-                      validation.touched.username && validation.errors.username ? true : false
-                    }
-                  />
-                  {validation.touched.username && validation.errors.username ? (
-                    <FormFeedback type="invalid">{validation.errors.username}</FormFeedback>
-                  ) : null}
-                  <Input name="idx" value={idx} type="hidden" />
                 </div>
-                <div className="text-center mt-4">
-                  <Button type="submit" color="danger">
-                    Editar nombre de usuario
-                  </Button>
-                </div>
-              </Form>
-            </CardBody>
-          </Card>
-        </Container>
-      </div>
-    </React.Fragment>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+
+        <h4 className="card-title mb-4">Editar información del perfil</h4>
+
+        <Card>
+          <CardBody>
+            <Form onSubmit={(e) => {
+              e.preventDefault();
+              validation.handleSubmit();
+              return false;
+            }}>
+              <FormGroup>
+                <Label>Nombre</Label>
+                <Input
+                  name="username"
+                  type="text"
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.username || ""}
+                  invalid={!!(validation.touched.username && validation.errors.username)}
+                />
+                <FormFeedback>{validation.errors.username}</FormFeedback>
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Sector</Label>
+                <Input name="sector" value={validation.values.sector} onChange={validation.handleChange} />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Descripción de la empresa</Label>
+                <Input type="textarea" name="descripcion_empresa" value={validation.values.descripcion_empresa} onChange={validation.handleChange} />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Propuesta de valor</Label>
+                <Input type="textarea" name="propuesta_valor" value={validation.values.propuesta_valor} onChange={validation.handleChange} />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Portafolio comercial</Label>
+                <Input type="textarea" name="portafolio_comercial" value={validation.values.portafolio_comercial} onChange={validation.handleChange} />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Segmentación de audiencia</Label>
+                <Input type="textarea" name="segmentacion_audiencia" value={validation.values.segmentacion_audiencia} onChange={validation.handleChange} />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Sitio Web</Label>
+                <Input
+                  type="text"
+                  name="sitioWeb"
+                  value={validation.values.sitioWeb}
+                  onChange={validation.handleChange}
+                  invalid={!!(validation.touched.sitioWeb && validation.errors.sitioWeb)}
+                />
+                <FormFeedback>{validation.errors.sitioWeb}</FormFeedback>
+              </FormGroup>
+
+              {updateSuccess && (
+                <Alert color="success" className="mt-3">
+                  Datos actualizados
+                </Alert>
+              )}
+
+              {updateError && (
+                <Alert color="danger" className="mt-3">
+                  {updateError}
+                </Alert>
+              )}
+
+              <div className="text-center mt-4">
+                <Button
+                  type="submit"
+                  style={{ backgroundColor: "#000b24", color: "#fff" }}
+                  disabled={validation.isSubmitting}>
+                  {validation.isSubmitting ? "Guardando..." : "Guardar cambios"}
+                </Button>
+              </div>
+            </Form>
+          </CardBody>
+        </Card>
+      </Container>
+    </div>
   );
 };
 
@@ -263,6 +332,4 @@ const mapStatetoProps = state => {
   return { error, success };
 };
 
-export default withRouter(
-  connect(mapStatetoProps, { editProfile, resetProfileFlag })(PerfilUsuario)
-);
+export default withRouter(connect(mapStatetoProps, { editProfile, resetProfileFlag })(PerfilUsuario));
