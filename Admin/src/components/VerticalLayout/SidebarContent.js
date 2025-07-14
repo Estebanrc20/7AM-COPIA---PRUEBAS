@@ -5,7 +5,6 @@ import MetisMenu from "metismenujs";
 import withRouter from "components/Common/withRouter";
 import { Link, useLocation } from "react-router-dom";
 import { withTranslation } from "react-i18next";
-import { UncontrolledTooltip } from "reactstrap";
 
 const SidebarContent = props => {
   const location = useLocation();
@@ -49,13 +48,11 @@ const SidebarContent = props => {
   }, []);
 
   const removeActivation = (items) => {
-    for (var i = 0; i < items.length; ++i) {
+    for (let i = 0; i < items.length; ++i) {
       const item = items[i];
       const parent = item.parentElement;
 
-      if (item.classList.contains("active")) {
-        item.classList.remove("active");
-      }
+      item.classList.remove("active");
 
       if (parent) {
         const parent2El = parent.childNodes[1];
@@ -121,6 +118,44 @@ const SidebarContent = props => {
     activeMenu();
   }, [activeMenu]);
 
+  // Cierra menú móvil y limpia clases activas
+  useEffect(() => {
+    const handleLinkClick = () => {
+      if (window.innerWidth < 992) {
+        document.body.classList.remove("sidebar-enable");
+      }
+
+      const activeItems = document.querySelectorAll("#side-menu .mm-active, #side-menu .active, #side-menu .mm-show");
+      activeItems.forEach(item => item.classList.remove("mm-active", "active", "mm-show"));
+
+      document.querySelectorAll("#side-menu .waves-effect").forEach(el => {
+        el.classList.remove("active");
+      });
+    };
+
+    const menuLinks = document.querySelectorAll("#side-menu a");
+    menuLinks.forEach(link => link.addEventListener("click", handleLinkClick));
+
+    return () => {
+      menuLinks.forEach(link => link.removeEventListener("click", handleLinkClick));
+    };
+  }, []);
+
+  // Restaurar títulos al expandir el menú
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      if (!document.body.classList.contains("vertical-collpsed")) {
+        setTimeout(() => {
+          activeMenu();
+        }, 300);
+      }
+    });
+
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+    return () => observer.disconnect();
+  }, [activeMenu]);
+
   function scrollElement(item) {
     if (item) {
       const currentPosition = item.offsetTop;
@@ -129,8 +164,6 @@ const SidebarContent = props => {
       }
     }
   }
-
-  const isCollapsed = document.body.classList.contains("vertical-collpsed");
 
   return (
     <React.Fragment>
@@ -142,61 +175,36 @@ const SidebarContent = props => {
             <li>
               <Link to="/Home" className="waves-effect" id="menu-home">
                 <i className="ti-home"></i>
-                {!isCollapsed && <span className="menu-text">{props.t("Home")}</span>}
+                <span className="menu-text">{props.t("Home")}</span>
               </Link>
-              {isCollapsed && (
-                <UncontrolledTooltip placement="right" target="menu-home">
-                  {props.t("Home")}
-                </UncontrolledTooltip>
-              )}
             </li>
 
             <li>
               <Link to="/Planificacion" className="waves-effect" id="menu-plan">
                 <i className="ti-bar-chart"></i>
-                {!isCollapsed && <span className="menu-text">{props.t("Planificación y Analitica")}</span>}
+                <span className="menu-text">{props.t("Planificación y Analitica")}</span>
               </Link>
-              {isCollapsed && (
-                <UncontrolledTooltip placement="right" target="menu-plan">
-                  {props.t("Planificación y Analitica")}
-                </UncontrolledTooltip>
-              )}
             </li>
 
             <li>
               <Link to="/Plantillas" className="waves-effect" id="menu-plantillas">
                 <i className="ti-layout"></i>
-                {!isCollapsed && <span className="menu-text">{props.t("Plantillas Canva")}</span>}
+                <span className="menu-text">{props.t("Plantillas Canva")}</span>
               </Link>
-              {isCollapsed && (
-                <UncontrolledTooltip placement="right" target="menu-plantillas">
-                  {props.t("Plantillas Canva")}
-                </UncontrolledTooltip>
-              )}
             </li>
 
             <li>
               <Link to="/Ideas" className="waves-effect" id="menu-ideas">
                 <i className="ti-light-bulb"></i>
-                {!isCollapsed && <span className="menu-text">{props.t("Ideas de contenido")}</span>}
+                <span className="menu-text">{props.t("Ideas de contenido")}</span>
               </Link>
-              {isCollapsed && (
-                <UncontrolledTooltip placement="right" target="menu-ideas">
-                  {props.t("Ideas de contenido")}
-                </UncontrolledTooltip>
-              )}
             </li>
 
             <li>
               <Link to="/ArticulosDelBlog" className="waves-effect" id="menu-articulos">
                 <i className="ti-write"></i>
-                {!isCollapsed && <span className="menu-text">{props.t("Articulos del blog")}</span>}
+                <span className="menu-text">{props.t("Articulos del blog")}</span>
               </Link>
-              {isCollapsed && (
-                <UncontrolledTooltip placement="right" target="menu-articulos">
-                  {props.t("Articulos del blog")}
-                </UncontrolledTooltip>
-              )}
             </li>
           </ul>
         </div>

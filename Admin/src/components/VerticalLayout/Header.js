@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import ProfileMenu from "../CommonForBoth/TopbarDropdown/ProfileMenu";
 import logo7amImg from "../../assets/images/LOGO7AM.png";
 import logo7amblanco from "../../assets/images/logo7amblanco.png";
+import logo7 from "../../assets/images/logo7.png";
 import { withTranslation } from "react-i18next";
 
 import {
@@ -15,34 +16,34 @@ import {
 
 const Header = props => {
   function tToggle() {
-  if (window.innerWidth < 0) {
-    document.body.classList.toggle("sidebar-open"); // Modo móvil
-  } else {
-    document.body.classList.toggle("sidebar-collapsed"); // Modo escritorio
+    document.body.classList.toggle("sidebar-enable"); // Para móviles
+
+    if (window.innerWidth >= 992) {
+      document.body.classList.toggle("vertical-collpsed"); // Para escritorio
+    }
   }
-}
 
   return (
     <React.Fragment>
       <header id="page-topbar">
         <div className="navbar-header">
           <div className="d-flex">
-            <div className="navbar-brand-box">
+            <div className="navbar-brand-box ">
               <Link to="/" className="logo logo-dark">
-                <span className="logo-sm logo-icon">
-                  <img src={logo7amImg} alt="logo" height="48" />
+                <span className="logo-sm">
+                  <img src={logo7} alt="logo pequeño" height="48" />
                 </span>
-                <span className="logo-lg logo-text">
-                  <img src={logo7amImg} alt="logo" height="48" />
+                <span className="logo-lg">
+                  <img src={logo7amImg} alt="logo completo" height="48" />
                 </span>
               </Link>
 
               <Link to="/" className="logo logo-light">
-                <span className="logo-sm logo-icon">
-                  <img src={logo7amblanco} alt="logo" height="48" />
+                <span className="logo-sm">
+                  <img src={logo7} alt="logo pequeño" height="48" />
                 </span>
-                <span className="logo-lg logo-text">
-                  <img src={logo7amblanco} alt="logo" height="48" />
+                <span className="logo-lg">
+                  <img src={logo7amblanco} alt="logo completo blanco" height="48" />
                 </span>
               </Link>
             </div>
