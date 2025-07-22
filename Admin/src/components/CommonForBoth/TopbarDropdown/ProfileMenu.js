@@ -147,10 +147,10 @@ const ProfileMenu = props => {
             {props.t("Ver Perfil")}
           </DropdownItem>
 
-          <DropdownItem tag="a" href="/EditarPerfil">
+          {/*<DropdownItem tag="a" href="/EditarPerfil">
             <i className="mdi mdi-account-edit font-size-17 align-middle me-1" />
             {props.t("Editar Perfil")}
-          </DropdownItem>
+          </DropdownItem>*/} 
 
           <div className="dropdown-divider" />
           <DropdownItem onClick={logout} className="text-danger">

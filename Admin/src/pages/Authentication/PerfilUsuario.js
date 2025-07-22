@@ -12,7 +12,10 @@ import {
   FormFeedback,
   Label,
   Input,
-  FormGroup
+  FormGroup,
+  Modal,
+  ModalHeader,
+  ModalBody
 } from "reactstrap";
 
 import * as Yup from "yup";
@@ -22,6 +25,8 @@ import withRouter from 'components/Common/withRouter';
 import Breadcrumb from "../../components/Common/Breadcrumb";
 import { editProfile, resetProfileFlag } from "../../store/actions";
 import { supabase } from "../../supabaseClient";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen } from "@fortawesome/free-solid-svg-icons";
 
 const PerfilUsuario = props => {
   const dispatch = useDispatch();
@@ -31,7 +36,12 @@ const PerfilUsuario = props => {
   const [initial, setInitial] = useState("");
   const [bgColor, setBgColor] = useState("#6C63FF");
   const [profilePic, setProfilePic] = useState("");
+  const [modalFotoOpen, setModalFotoOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [previewImage, setPreviewImage] = useState(null); // Para la previsualización
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const [userData, setUserData] = useState({
     sector: "",
@@ -42,14 +52,12 @@ const PerfilUsuario = props => {
     sitioWeb: "",
   });
 
+  const [originalValues, setOriginalValues] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [updateError, setUpdateError] = useState("");
 
   const generateRandomColor = () => {
-    const colors = [
-      "#6C63FF", "#FF6B6B", "#4DD0E1", "#81C784", "#BA68C8", "#FFD54F", "#A1887F",
-      "#4FC3F7", "#81D4FA", "#FFB74D", "#FF8A65"
-    ];
+    const colors = ["#6C63FF", "#FF6B6B", "#4DD0E1", "#81C784", "#BA68C8", "#FFD54F", "#A1887F", "#4FC3F7", "#81D4FA", "#FFB74D", "#FF8A65"];
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
@@ -94,14 +102,17 @@ const PerfilUsuario = props => {
           setProfilePic("");
         }
 
-        setUserData({
+        const newUserData = {
           sector: data.sector || "",
           descripcion_empresa: data.descripcion_empresa || "",
           propuesta_valor: data.propuesta_valor || "",
           portafolio_comercial: data.portafolio_comercial || "",
           segmentacion_audiencia: data.segmentacion_audiencia || "",
           sitioWeb: data.sitioWeb || "",
-        });
+        };
+
+        setUserData(newUserData);
+        setOriginalValues({ ...newUserData });
       }
 
       setLoading(false);
@@ -109,70 +120,72 @@ const PerfilUsuario = props => {
 
     fetchUser();
 
-    const handlePicUpdate = () => {
-      const nuevaFoto = localStorage.getItem("profilePic");
-      setProfilePic(nuevaFoto || "");
-    };
-
-    window.addEventListener("profilePicUpdated", handlePicUpdate);
-
     setTimeout(() => {
       props.resetProfileFlag();
     }, 3000);
-
-    return () => {
-      window.removeEventListener("profilePicUpdated", handlePicUpdate);
-    };
   }, [props.success]);
+
+  // Manejar selección de imagen en el modal
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
+  // Subir imagen al hacer clic en Guardar cambios
+  const handleSaveImage = async () => {
+    if (!selectedFile || !email) return;
+
+    const fileExt = selectedFile.name.split('.').pop();
+    const fileName = `${email}.${fileExt}`;
+    const filePath = `perfil/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("perfil")
+      .upload(filePath, selectedFile, { upsert: true });
+
+    if (uploadError) {
+      console.error("Error al subir la imagen:", uploadError.message);
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage.from("perfil").getPublicUrl(filePath);
+
+    const { error: updateError } = await supabase
+      .from("users_data")
+      .update({ foto_perfil: publicUrl })
+      .eq("email", email);
+
+    if (!updateError) {
+      setProfilePic(publicUrl);
+      localStorage.setItem("profilePic", publicUrl);
+      setModalFotoOpen(false);
+      setSelectedFile(null);
+      setPreviewImage(null);
+    }
+  };
 
   const validation = useFormik({
     enableReinitialize: true,
-    initialValues: {
-      username: name,
-      ...userData
-    },
+    initialValues: { ...userData },
     validationSchema: Yup.object({
-      username: Yup.string().required("Por favor, introduzca su nombre"),
       sitioWeb: Yup.string().url("Debe ser una URL válida").nullable()
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      if (!email) {
-        console.error("No se encontró el email del usuario.");
-        return;
-      }
-
       const { error } = await supabase
         .from("users_data")
-        .update({
-          nombre: values.username,
-          sector: values.sector || null,
-          descripcion_empresa: values.descripcion_empresa || null,
-          propuesta_valor: values.propuesta_valor || null,
-          portafolio_comercial: values.portafolio_comercial || null,
-          segmentacion_audiencia: values.segmentacion_audiencia || null,
-          sitioWeb: values.sitioWeb || null,
-        })
+        .update({ ...values })
         .eq("email", email);
 
       setSubmitting(false);
 
       if (!error) {
-        setName(values.username);
-        setUserData({
-          sector: values.sector,
-          descripcion_empresa: values.descripcion_empresa,
-          propuesta_valor: values.propuesta_valor,
-          portafolio_comercial: values.portafolio_comercial,
-          segmentacion_audiencia: values.segmentacion_audiencia,
-          sitioWeb: values.sitioWeb,
-        });
-
-        const userInitial = values.username.charAt(0).toUpperCase();
-        localStorage.setItem("username", values.username);
-        localStorage.setItem("userInitial", userInitial);
-        setInitial(userInitial);
-
+        setUserData(values);
+        setOriginalValues(values);
         setUpdateSuccess(true);
+        setIsEditing(false);
         setTimeout(() => setUpdateSuccess(false), 3000);
       } else {
         console.error("Error al actualizar en Supabase:", error.message);
@@ -191,26 +204,25 @@ const PerfilUsuario = props => {
 
         <Row>
           <Col lg="12">
-            {props.error && (
-              <Alert color="danger">{props.error?.message || props.error}</Alert>
-            )}
-            {props.success && <Alert color="success">{props.success}</Alert>}
-
             <Card>
               <CardBody>
                 <div className="d-flex">
-                  <div className="mx-3">
+                  <div className="mx-3 position-relative" style={{ width: 90, height: 90 }}>
                     {profilePic ? (
-                      <img src={profilePic} alt="foto" style={{
-                        width: "60px",
-                        height: "60px",
-                        borderRadius: "50%",
-                        objectFit: "cover"
-                      }} />
+                      <img
+                        src={profilePic}
+                        alt="foto"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          borderRadius: "50%",
+                          objectFit: "cover"
+                        }}
+                      />
                     ) : (
                       <div style={{
-                        width: "60px",
-                        height: "60px",
+                        width: "100%",
+                        height: "100%",
                         borderRadius: "50%",
                         backgroundColor: bgColor,
                         color: "#fff",
@@ -218,15 +230,37 @@ const PerfilUsuario = props => {
                         alignItems: "center",
                         justifyContent: "center",
                         fontWeight: "bold",
-                        fontSize: "24px"
-                      }}>{initial}</div>
+                        fontSize: 32
+                      }}>
+                        {initial}
+                      </div>
                     )}
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: 8,
+                        right: 8,
+                        width: 35,
+                        height: 35,
+                        backgroundColor: "rgba(0, 0, 0, 0.7)",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        transition: "transform 0.3s ease, background-color 0.3s ease"
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                      onClick={() => setModalFotoOpen(true)}
+                      title="Cambiar foto"
+                    >
+                      <FontAwesomeIcon icon={faPen} color="#fff" />
+                    </div>
                   </div>
                   <div className="align-self-center flex-1">
-                    <div className="text-muted">
-                      <h5>{name}</h5>
-                      <p className="mb-1">{email}</p>
-                    </div>
+                    <h5>{name}</h5>
+                    <p className="mb-1 text-muted">{email}</p>
                   </div>
                 </div>
               </CardBody>
@@ -234,88 +268,84 @@ const PerfilUsuario = props => {
           </Col>
         </Row>
 
-        <h4 className="card-title mb-4">Editar información del perfil</h4>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h4 className="card-title">Editar información del perfil</h4>
+          <Button
+            style={{ backgroundColor: "#000b24", color: "#fff" }}
+            onClick={() => {
+              if (isEditing) {
+                validation.setValues(originalValues);
+              }
+              setIsEditing(!isEditing);
+            }}
+          >
+            {isEditing ? "Cancelar" : "Editar"}
+          </Button>
+        </div>
 
         <Card>
           <CardBody>
-            <Form onSubmit={(e) => {
-              e.preventDefault();
-              validation.handleSubmit();
-              return false;
-            }}>
-              <FormGroup>
-                <Label>Nombre</Label>
-                <Input
-                  name="username"
-                  type="text"
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.username || ""}
-                  invalid={!!(validation.touched.username && validation.errors.username)}
-                />
-                <FormFeedback>{validation.errors.username}</FormFeedback>
-              </FormGroup>
+            <Form onSubmit={(e) => { e.preventDefault(); validation.handleSubmit(); return false; }}>
+              {Object.entries(userData).map(([key]) => (
+                <FormGroup key={key}>
+                  <Label>{key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</Label>
+                  <Input
+                    type={key === "sitioWeb" ? "text" : "textarea"}
+                    name={key}
+                    value={validation.values[key]}
+                    onChange={validation.handleChange}
+                    disabled={!isEditing}
+                    invalid={!!(validation.touched[key] && validation.errors[key])}
+                  />
+                  <FormFeedback>{validation.errors[key]}</FormFeedback>
+                </FormGroup>
+              ))}
 
-              <FormGroup>
-                <Label>Sector</Label>
-                <Input name="sector" value={validation.values.sector} onChange={validation.handleChange} />
-              </FormGroup>
+              {updateSuccess && <Alert color="success">Datos actualizados</Alert>}
+              {updateError && <Alert color="danger">{updateError}</Alert>}
 
-              <FormGroup>
-                <Label>Descripción de la empresa</Label>
-                <Input type="textarea" name="descripcion_empresa" value={validation.values.descripcion_empresa} onChange={validation.handleChange} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Propuesta de valor</Label>
-                <Input type="textarea" name="propuesta_valor" value={validation.values.propuesta_valor} onChange={validation.handleChange} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Portafolio comercial</Label>
-                <Input type="textarea" name="portafolio_comercial" value={validation.values.portafolio_comercial} onChange={validation.handleChange} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Segmentación de audiencia</Label>
-                <Input type="textarea" name="segmentacion_audiencia" value={validation.values.segmentacion_audiencia} onChange={validation.handleChange} />
-              </FormGroup>
-
-              <FormGroup>
-                <Label>Sitio Web</Label>
-                <Input
-                  type="text"
-                  name="sitioWeb"
-                  value={validation.values.sitioWeb}
-                  onChange={validation.handleChange}
-                  invalid={!!(validation.touched.sitioWeb && validation.errors.sitioWeb)}
-                />
-                <FormFeedback>{validation.errors.sitioWeb}</FormFeedback>
-              </FormGroup>
-
-              {updateSuccess && (
-                <Alert color="success" className="mt-3">
-                  Datos actualizados
-                </Alert>
+              {isEditing && (
+                <div className="text-center mt-4">
+                  <Button
+                    type="submit"
+                    style={{ backgroundColor: "#000b24", color: "#fff" }}
+                    disabled={validation.isSubmitting}
+                  >
+                    {validation.isSubmitting ? "Guardando..." : "Guardar cambios"}
+                  </Button>
+                </div>
               )}
-
-              {updateError && (
-                <Alert color="danger" className="mt-3">
-                  {updateError}
-                </Alert>
-              )}
-
-              <div className="text-center mt-4">
-                <Button
-                  type="submit"
-                  style={{ backgroundColor: "#000b24", color: "#fff" }}
-                  disabled={validation.isSubmitting}>
-                  {validation.isSubmitting ? "Guardando..." : "Guardar cambios"}
-                </Button>
-              </div>
             </Form>
           </CardBody>
         </Card>
+
+        {/* Modal para subir foto */}
+        <Modal isOpen={modalFotoOpen} toggle={() => setModalFotoOpen(!modalFotoOpen)}>
+          <ModalHeader toggle={() => setModalFotoOpen(false)}>Cambiar foto de perfil</ModalHeader>
+          <ModalBody className="text-center">
+            {previewImage ? (
+              <img
+                src={previewImage}
+                alt="preview"
+                style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover", marginBottom: 20 }}
+              />
+            ) : (
+              <img
+                src={profilePic}
+                alt="foto actual"
+                style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover", marginBottom: 20 }}
+              />
+            )}
+            <Input type="file" accept="image/*" onChange={handleFileChange} className="mb-3" />
+            <Button
+              style={{ backgroundColor: "#000b24", color: "#fff" }}
+              onClick={handleSaveImage}
+              disabled={!selectedFile}
+            >
+              Guardar cambios
+            </Button>
+          </ModalBody>
+        </Modal>
       </Container>
     </div>
   );

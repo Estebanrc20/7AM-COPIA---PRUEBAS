@@ -1,133 +1,282 @@
 import PropTypes from 'prop-types';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Row,
   Col,
   Table,
   Card,
-  CardBody
+  CardBody,
+  Spinner,
+  Button,
+  Input
 } from "reactstrap";
+import { supabase } from '../../supabaseClient';
 
-const Home = props => {
-  const [menu, setMenu] = useState(false);
-  const toggle = () => setMenu(!menu);
+const Home = () => {
+  const [ideas, setIdeas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState(null);
+  const [editedIdea, setEditedIdea] = useState({});
+  const [expandedRowId, setExpandedRowId] = useState(null);
 
-  const ideas = [
-    {
-      fecha: "31/3/2025",
-      formato: "Reel",
-      idea: "Resumen del Mes",
-      categoria: "Atención",
-      pilar: "Inspiracional",
-      instrucciones: "Crea un Reel con un resumen del mes que incluya los mejores momentos, logros e hitos alcanzados por la agencia. Agradece a la audiencia por su apoyo."
-    },
-    {
-      fecha: "30/3/2025",
-      formato: "Story",
-      idea: "Tip Rapido: Mejora en Conversaciones",
-      categoria: "Deseo",
-      pilar: "Educativo",
-      instrucciones: "Publica historias rapidas con tips y herramientas para las conversaciones en una tienda online. Anima a la audiencia a probar y comentar."
-    },
-    {
-      fecha: "29/3/2025",
-      formato: "Post",
-      idea: "CTA para consultoria de Marketing",
-      categoria: "Acción",
-      pilar: "Comercial",
-      instrucciones: "Crea un post promcionando servicios de consultoria de marketing digital, incluye un CTA contundente para agendar una llamada gratuita."
+  useEffect(() => {
+    fetchIdeas();
+  }, []);
+
+  const fetchIdeas = async () => {
+    setLoading(true);
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.error("No se pudo obtener el usuario autenticado");
+      setIdeas([]);
+      setLoading(false);
+      return;
     }
-  ];
+
+    const { data, error } = await supabase
+      .from('ideas_contenido')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('fecha', { ascending: false });
+
+    if (error) {
+      console.error("Error cargando ideas:", error.message);
+      setIdeas([]);
+    } else {
+      setIdeas(data);
+    }
+    setLoading(false);
+  };
+
+  const handleEdit = (idea) => {
+    setEditingId(idea.id);
+    setEditedIdea({ ...idea });
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setEditedIdea({});
+  };
+
+  const handleSave = async () => {
+    const { data, error } = await supabase
+      .from('ideas_contenido')
+      .update(editedIdea)
+      .eq('id', editingId)
+      .select(); // 👈 Esto trae el registro actualizado desde la base
+
+    if (!error && data && data.length > 0) {
+      setIdeas(prevIdeas =>
+        prevIdeas.map(idea =>
+          idea.id === editingId ? data[0] : idea
+        )
+      );
+      setEditingId(null);
+      setEditedIdea({});
+    } else {
+      console.error("Error actualizando idea:", error?.message);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const { error } = await supabase
+      .from('ideas_contenido')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      setIdeas(prevIdeas => prevIdeas.filter(idea => idea.id !== id));
+    } else {
+      console.error("Error eliminando idea:", error.message);
+    }
+  };
+
+  const handleChange = (field, value) => {
+    setEditedIdea(prev => ({ ...prev, [field]: value }));
+  };
+
+  const toggleExpand = (id) => {
+    setExpandedRowId(prevId => (prevId === id ? null : id));
+  };
 
   document.title = "Ideas | 7 AM Digital";
 
   return (
-    <React.Fragment>
-      <div className="page-content">
-        <Container fluid>
-          <div className="page-title-box">
-            <Row className="align-items-center">
-              <Col md={8}>
-                <h6 className="page-title">Ideas de Contenido</h6>
-                <ol className="breadcrumb m-0">
-                  <li className="breadcrumb-item active">7AM Digital</li>
-                </ol>
-              </Col>
-            </Row>
-          </div>
+    <div className="page-content">
+      <Container fluid>
+        <div className="page-title-box">
+          <Row className="align-items-center">
+            {/*<Col md={8}>
+              <h6 className="page-title">Ideas de Contenido</h6>
+              <ol className="breadcrumb m-0">
+                <li className="breadcrumb-item active">7AM Digital</li>
+              </ol>
+            </Col>*/}
+          </Row>
+        </div>
 
-          {/* 🔷 Tarjeta informativa */}
-          <Card className="mb-4" style={{ backgroundColor: '#e9f2fc', border: 'none', borderRadius: '12px' }}>
-            <CardBody>
-              <h5 style={{ color: '#2b2f32', fontWeight: 'bold' }}>Contenido para redes</h5>
-              <p style={{ marginBottom: 0, color: '#5a5a5a' }}>
-                Cada mes te entregaremos nuevas ideas de contenido generadas por nuestro algoritmo de IA, basadas en la información de tu negocio y tus mejores publicaciones en redes sociales.
-                Si quieres editar la información de tu negocio puedes ir a la sección <strong>Mi Negocio</strong>.
-              </p>
-            </CardBody>
-          </Card>
+        <Card className="mb-3" style={{ backgroundColor: '#e9f2fc', border: 'none', borderRadius: '12px' }}>
+          <CardBody>
+            <h5 style={{ color: '#2b2f32', fontWeight: 'bold' }}>Contenido para redes</h5>
+            <p style={{ marginBottom: 0, color: '#5a5a5a' }}>
+              Cada mes te entregaremos nuevas ideas de contenido generadas por nuestro algoritmo de IA,
+              basadas en la información de tu negocio y tus mejores publicaciones en redes sociales.
+              Si quieres editar la información de tu negocio puedes ir a la sección <strong>Mi Negocio</strong>.
+            </p>
+          </CardBody>
+        </Card>
 
-          {/* 📊 Tabla de ideas */}
-          <Card style={{ backgroundColor: '#e9f2fc', borderRadius: '12px' }}>
-            <CardBody>
-              <Table bordered responsive>
-                <thead>
-                  <tr>
-                    <th style={{ backgroundColor: '#007bff', color: '#fff' }}>Fecha</th>
-                    <th style={{ backgroundColor: '#007bff', color: '#fff' }}>Formato</th>
-                    <th style={{ backgroundColor: '#007bff', color: '#fff' }}>Idea</th>
-                    <th style={{ backgroundColor: '#007bff', color: '#fff' }}>Categoría</th>
-                    <th style={{ backgroundColor: '#007bff', color: '#fff' }}>Pilar</th>
-                    <th style={{ backgroundColor: '#007bff', color: '#fff', width: '490px' }}>Instrucciones para crear contenido</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ideas.map((idea, index) => (
-                    <tr key={index}>
-                      <td>{idea.fecha}</td>
-                      <td>
-                        <span style={{
-                          backgroundColor: '#cce5ff',
-                          color: '#003366',
-                          padding: '4px 8px',
-                          borderRadius: '8px',
-                          display: 'inline-block',
-                          fontWeight: 500
-                        }}>{idea.formato}</span>
-                      </td>
-                      <td>{idea.idea}</td>
-                      <td>
-                        <span style={{
-                          backgroundColor: '#d4edda',
-                          color: '#155724',
-                          padding: '4px 8px',
-                          borderRadius: '8px',
-                          display: 'inline-block',
-                          fontWeight: 500
-                        }}>{idea.categoria}</span>
-                      </td>
-                      <td>
-                        <span style={{
-                          backgroundColor: '#f8d7da',
-                          color: '#721c24',
-                          padding: '4px 8px',
-                          borderRadius: '8px',
-                          display: 'inline-block',
-                          fontWeight: 500
-                        }}>{idea.pilar}</span>
-                      </td>
-                      <td>{idea.instrucciones}</td>
+        <Row className="mb-3">
+          <Col className="text-end">
+            <Button style={{ backgroundColor: "#000b24", color: "#fff" }}>
+              Sincronizar con Metricool
+            </Button>
+          </Col>
+        </Row>
+
+        <Card style={{ backgroundColor: '#e9f2fc', borderRadius: '12px' }}>
+          <CardBody>
+            {loading ? (
+              <div className="text-center">
+                <Spinner color="primary" /> Cargando ideas...
+              </div>
+            ) : ideas.length === 0 ? (
+              <div className="text-center text-muted">
+                Aún no tienes ideas registradas. ¡Cuando generes contenido, aparecerá aquí!
+              </div>
+            ) : (
+              <div style={{ overflowX: "auto" }}>
+                <Table bordered responsive="sm" className="align-middle">
+                  <thead>
+                    <tr>
+                      <th style={{ backgroundColor: '#000b24', color: '#fff' }}>Fecha</th>
+                      <th style={{ backgroundColor: '#000b24', color: '#fff' }}>Formato</th>
+                      <th style={{ backgroundColor: '#000b24', color: '#fff' }}>Idea</th>
+                      <th className="d-none d-md-table-cell" style={{ backgroundColor: '#000b24', color: '#fff' }}>Categoría</th>
+                      <th className="d-none d-md-table-cell" style={{ backgroundColor: '#000b24', color: '#fff' }}>Pilar</th>
+                      <th style={{ backgroundColor: '#000b24', color: '#fff' }}>Instrucciones</th>
+                      <th style={{ backgroundColor: '#000b24', color: '#fff' }}>Acciones</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </CardBody>
-          </Card>
+                  </thead>
+                  <tbody>
+                    {ideas.map((idea) => {
+                      const isEditing = editingId === idea.id;
+                      const isExpanded = expandedRowId === idea.id;
 
-        </Container>
-      </div>
-    </React.Fragment>
+                      return (
+                        <React.Fragment key={idea.id}>
+                          <tr>
+                            <td>
+                              {isEditing ? (
+                                <Input
+                                  type="date"
+                                  value={editedIdea.fecha ? new Date(editedIdea.fecha).toISOString().split('T')[0] : ''}
+                                  onChange={(e) => handleChange('fecha', e.target.value)}
+                                />
+                              ) : idea.fecha ? new Intl.DateTimeFormat('es-CO', {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                timeZone: 'UTC'
+                              }).format(new Date(idea.fecha)) : 'Sin fecha'}
+                            </td>
+                            <td>
+                              {isEditing ? (
+                                <Input
+                                  value={editedIdea.formato}
+                                  onChange={(e) => handleChange('formato', e.target.value)}
+                                />
+                              ) : idea.formato}
+                            </td>
+                            <td>
+                              {isEditing ? (
+                                <Input
+                                  type="textarea"
+                                  value={editedIdea.idea}
+                                  onChange={(e) => handleChange('idea', e.target.value)}
+                                />
+                              ) : idea.idea}
+                            </td>
+                            <td className="d-none d-md-table-cell">
+                              {isEditing ? (
+                                <Input
+                                  value={editedIdea.categoria}
+                                  onChange={(e) => handleChange('categoria', e.target.value)}
+                                />
+                              ) : idea.categoria}
+                            </td>
+                            <td className="d-none d-md-table-cell">
+                              {isEditing ? (
+                                <Input
+                                  value={editedIdea.pilar}
+                                  onChange={(e) => handleChange('pilar', e.target.value)}
+                                />
+                              ) : idea.pilar}
+                            </td>
+                            <td>
+                              {isEditing ? (
+                                <Input
+                                  type="textarea"
+                                  value={editedIdea.instrucciones}
+                                  onChange={(e) => handleChange('instrucciones', e.target.value)}
+                                />
+                              ) : (
+                                <div style={{ whiteSpace: "pre-line" }}>
+                                  {idea.instrucciones.length > 150 ? (
+                                    <>
+                                      {isExpanded
+                                        ? idea.instrucciones
+                                        : `${idea.instrucciones.substring(0, 150)}... `}
+                                      <Button
+                                        color="link"
+                                        size="sm"
+                                        style={{ padding: 0 }}
+                                        onClick={() => toggleExpand(idea.id)}
+                                      >
+                                        {isExpanded ? 'Ver menos ↑' : 'Ver más ↓'}
+                                      </Button>
+                                    </>
+                                  ) : idea.instrucciones}
+                                </div>
+                              )}
+                            </td>
+                            <td>
+                              <div className="d-flex flex-column align-items-center gap-2">
+                                {isEditing ? (
+                                  <>
+                                    <Button color="success" size="sm" onClick={handleSave}>
+                                      Guardar
+                                    </Button>
+                                    <Button color="secondary" size="sm" onClick={handleCancel}>
+                                      Cancelar
+                                    </Button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Button color="warning" size="sm" onClick={() => handleEdit(idea)}>
+                                      Editar
+                                    </Button>
+                                    <Button color="danger" size="sm" onClick={() => handleDelete(idea.id)}>
+                                      Eliminar
+                                    </Button>
+                                  </>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        </React.Fragment>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              </div>
+            )}
+          </CardBody>
+        </Card>
+      </Container>
+    </div>
   );
 };
 

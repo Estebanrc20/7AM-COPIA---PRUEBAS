@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Row,
@@ -7,103 +7,50 @@ import {
   Button,
   Card,
   CardBody,
-  Input,
   Dropdown,
   DropdownToggle,
   DropdownItem,
-  DropdownMenu
+  DropdownMenu,
+  Spinner
 } from "reactstrap";
+import { supabase } from "../../supabaseClient";
 
-const templatesData = [
-  {
-    id: 1,
-    title: "Plantilla de Negocios",
-    category: "Negocios",
-    type: "Feed",
-    imageUrl: require ("../../assets/images/plantilla1CANVA.png"),
-    canvaLink: "https://www.canva.com/es_es/plantillas/EAFjR0cxy-s-presentacion-propuesta-de-proyecto-de-la-empresa-corporativo-moderno-azul/"
-  },
-  {
-    id: 2,
-    title: "Plantilla de Cumpleaños",
-    category: "Eventos",
-    type: "Feed",
-    imageUrl: require ("../../assets/images/plantilla2CANVA.png"),
-    canvaLink: "https://www.canva.com/templates/EAFx2rXRLZg-pink-and-purple-fun-playful-illustrative-happy-birthday-greeting-presentation/"
-  },
-  {
-    id: 3,
-    title: "Plantilla de Dia de la Madre",
-    category: "Fechas Importantes",
-    type: "Feed",
-    imageUrl: require ("../../assets/images/plantilla3CANVA.png"),
-    canvaLink: "https://www.canva.com/templates/EAFOGqv2baE-presentaci-n-dedicatoria-d-a-de-las-madres-floral-azul-y-verde/"
-  },
-  {
-    id: 4,
-    title: "Plantilla de Navidad",
-    category: "Fechas Importantes",
-    type: "Feed",
-    imageUrl: require ("../../assets/images/plantilla4CANVA.png"),
-    canvaLink: "https://www.canva.com/templates/EAGW1yVyhns-orange-and-yellow-illustration-christmas-presentation/"
-  },
-  {
-    id:5 ,
-    title: "Plantilla de Año Nuevo",
-    category: "Fechas Importantes",
-    type: "Feed",
-    imageUrl: require ("../../assets/images/plantilla5CANVA.png"),
-    canvaLink: "https://www.canva.com/templates/EAEZ2l0cQ8w-celebrations-around-the-world-pictorial-presentation-in-colorful-picture-style/"
-  },
-
-  {id:6,
-    title: "Plantilla de Tarjeta de Presentación",
-    category: "Marketing",
-    type: "Feed",
-    imageUrl: require ("../../assets/images/plantilla6CANVA.png"),
-    canvaLink: "https://www.canva.com/templates/EAFzil7HTIs-green-modern-business-card/"
-  },
-];
-
-//import { Link } from "react-router-dom";
-
-// Custom Scrollbar
-//import SimpleBar from "simplebar-react";
-
-// import images
-/*import plantilla1CANVA from "../../assets/images/plantilla1CANVA.png";
-import servicesIcon3 from "../../assets/images/services-icon/03.png";
-import servicesIcon4 from "../../assets/images/services-icon/04.png";
-import user2 from "../../assets/images/users/user-2.jpg";
-import user3 from "../../assets/images/users/user-3.jpg";
-import user4 from "../../assets/images/users/user-4.jpg";
-import user5 from "../../assets/images/users/user-5.jpg";
-import user6 from "../../assets/images/users/user-6.jpg";
-import smimg1 from "../../assets/images/small/img-1.jpg";
-import smimg2 from "../../assets/images/small/img-2.jpg";*/
-
-// Charts
-/*import LineAreaChart from "../AllCharts/apex/lineareachart";
-import RadialChart from "../AllCharts/apex/apexdonut";
-import Apexdonut from "../AllCharts/apex/apexdonut1";
-import SparkLine from "../AllCharts/sparkline/sparkline";
-import SparkLine1 from "../AllCharts/sparkline/sparkline1";
-import Salesdonut from "../AllCharts/apex/salesdonut";*/
-
-
-//i18n
-//import { withTranslation } from "react-i18next";
-
-const Home = props => {
+const Home = () => {
+  const [templates, setTemplates] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [menu, setMenu] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("Todas");
+  const [selectedFormat, setSelectedFormat] = useState("Todas");
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
-  const toggle = () => {setMenu(!menu);
-  };
-  const filteredTemplates = selectedCategory === "Todas"
-    ? templatesData
-    : templatesData.filter(template => template.category === selectedCategory);
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("plantillas_canva")
+        .select("id, formato, tipo, nombre, link_canva, imagen");
+
+      if (error) {
+        console.error("Error fetching templates:", error.message);
+      } else {
+        setTemplates(data || []);
+      }
+      setLoading(false);
+    };
+
+    fetchTemplates();
+  }, []);
+
+  const toggle = () => setMenu(!menu);
+
+  const filteredTemplates =
+    selectedFormat === "Todas"
+      ? templates
+      : templates.filter(template => template.formato.toLowerCase() === selectedFormat.toLowerCase());
+
+  // Evita scroll de fondo cuando modal está abierto
+  useEffect(() => {
+    document.body.style.overflow = selectedTemplate ? "hidden" : "auto";
+  }, [selectedTemplate]);
 
   document.title = "Plantillas | 7 AM Digital";
   return (
@@ -113,116 +60,136 @@ const Home = props => {
           <div className="page-title-box">
             <Row className="align-items-center">
               <Col md={8}>
-                <h6 className="page-title">Plantillas Canva</h6>
+                <h6 className="page-title">Plantillas editables canva</h6>
                 <ol className="breadcrumb m-0">
-                  <li className="breadcrumb-item active">7AM Digital</li>
+                  <li className="breadcrumb-item active">Cada mes renovamos las plantillas</li>
                 </ol>
               </Col>
-              </Row>
-              </div>
+            </Row>
+          </div>
 
-              <Row className="mb-4">
+          {/* Dropdown filtro */}
+          <Row className="mb-4">
             <Col md={4}>
               <Dropdown isOpen={menu} toggle={toggle}>
-                <DropdownToggle caret color="info">
-                  <i className="mdi mdi-filter"></i> Filtrar por Categoria: {selectedCategory}
+                <DropdownToggle caret style={{ backgroundColor: "#000b24", color: "#fff" }}>
+                  <i className="mdi mdi-filter"></i> Tipos: {selectedFormat}
                 </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem onClick={() => setSelectedCategory("Todas")}>Todas</DropdownItem>
-                  <DropdownItem onClick={() => setSelectedCategory("Negocios")}>Negocios</DropdownItem>
-                  <DropdownItem onClick={() => setSelectedCategory("Eventos")}>Eventos</DropdownItem>
-                  <DropdownItem onClick={() => setSelectedCategory("Fechas Importantes")}>Fechas Importantes</DropdownItem>
-                  <DropdownItem onClick={() => setSelectedCategory("Marketing")}>Marketing</DropdownItem>
+                <DropdownMenu direction="down">
+                  <DropdownItem onClick={() => setSelectedFormat("Todas")}>Todas</DropdownItem>
+                  <DropdownItem onClick={() => setSelectedFormat("reel")}>Reel</DropdownItem>
+                  <DropdownItem onClick={() => setSelectedFormat("post")}>Post</DropdownItem>
+                  <DropdownItem onClick={() => setSelectedFormat("story")}>Story</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </Col>
           </Row>
 
-          <Row>
-            {filteredTemplates.map(template => (
-              <Col md={4} className="mb-4" key={template.id}>
-                <Card>
-                  <CardBody>
-                    <img
-                      src={template.imageUrl}
-                      alt={template.title}
-                      className="img-fluid mb-2"
-                    />
-                    <h6>{template.title}</h6>
-                    <Button
-                      color="info"
-                      onClick={() => setSelectedTemplate(template)}
-                    >
-                      Ver plantilla
-                    </Button>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </Row>
+          {/* Lista de plantillas */}
+          {loading ? (
+            <div className="text-center">
+              <Spinner color="primary" />
+            </div>
+          ) : filteredTemplates.length === 0 ? (
+            <p>No se encontraron plantillas.</p>
+          ) : (
+            <Row>
+              {filteredTemplates.map(template => (
+                <Col md={3} className="mb-4" key={template.id}>
+                  <Card className="h-100 shadow-sm">
+                    <CardBody>
+                      <img
+                        src={template.imagen}
+                        alt={template.nombre}
+                        className="img-fluid mb-2"
+                        style={{ height: "180px", objectFit: "cover", width: "100%" }}
+                      />
+                      <h6 className="mb-1">{template.nombre}</h6>
+                      <p className="text-muted small mb-2">Formato: {template.formato}</p>
+                      <Button
+                        style={{ backgroundColor: "#000b24", color: "#fff" }}
+                        onClick={() => setSelectedTemplate(template)}>
+                        Ver plantilla
+                      </Button>
+                    </CardBody>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          )}
 
+          {/* Modal */}
           {selectedTemplate && (
             <div className="modal-backdrop">
               <div className="modal-container">
-                <div className="modal-content p-4">
-                  <h5>{selectedTemplate.title}</h5>
-                  <img
-                    src={selectedTemplate.imageUrl}
-                    alt={selectedTemplate.title}
-                    className="img-fluid mb-3"
-                  />
-                  <Button
-                    color="success"
-                    onClick={() => window.open(selectedTemplate.canvaLink, "_blank")}
-                  >
-                    Editar en Canva
-                  </Button>
-                  <Button
-                    color="secondary"
-                    className="ms-2"
-                    onClick={() => setSelectedTemplate(null)}
-                  >
-                    Cerrar
-                  </Button>
-                </div>
+                <h5 className="mb-3">{selectedTemplate.nombre}</h5>
+                <img
+                  src={selectedTemplate.imagen}
+                  alt={selectedTemplate.nombre}
+                  className="img-fluid mb-3 modal-img"
+                />
+                <Button
+                  color="success"
+                  block
+                  onClick={() => window.open(selectedTemplate.link_canva, "_blank")}
+                >
+                  Editar en Canva
+                </Button>
+                <Button
+                  color="secondary"
+                  block
+                  className="mt-2"
+                  onClick={() => setSelectedTemplate(null)}
+                >
+                  Cerrar
+                </Button>
               </div>
             </div>
           )}
         </Container>
       </div>
 
+      {/* Estilos del modal */}
       <style>{`
         .modal-backdrop {
           position: fixed;
           top: 0;
           left: 0;
-          width: 100vw;
-          height: 100vh;
-          background-color: rgba(0, 0, 0, 0.5);
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.7);
           display: flex;
           justify-content: center;
           align-items: center;
           z-index: 1050;
+          padding: 20px;
         }
         .modal-container {
           background-color: #fff;
           border-radius: 8px;
-          box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-          max-width: 600px;
+          padding: 20px;
+          max-width: 500px;
           width: 100%;
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+          text-align: center;
+        }
+        .modal-container .modal-img {
+          max-height: 250px;
+          width: auto;
+          object-fit: contain;
+          margin: 0 auto;
+        }
+        .btn-success {
+          background-color: #00b894 !important;
+          border-color: #00b894 !important;
         }
       `}</style>
-      
     </React.Fragment>
   );
 };
-
 
 Home.propTypes = {
   t: PropTypes.any
 };
 
-// export default withTranslation()(Dashboard);
 export default Home;
-
-
