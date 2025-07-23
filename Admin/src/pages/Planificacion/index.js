@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Container,
   Row,
@@ -13,6 +13,8 @@ const Home = () => {
 
   const [iframeUrl, setIframeUrl] = useState("");
   const [loading, setLoading] = useState(true);
+  const topRef = useRef(null);
+  const [iframeHeight, setIframeHeight] = useState("600px");
 
   useEffect(() => {
     const fetchIframeUrl = async () => {
@@ -42,9 +44,23 @@ const Home = () => {
     fetchIframeUrl();
   }, []);
 
+  useEffect(() => {
+    // Calcula la altura disponible para el iframe
+    const calculateHeight = () => {
+      const topHeight = topRef.current?.offsetTop || 0;
+      const padding = 120; // espacio para botones y márgenes
+      const availableHeight = window.innerHeight - topHeight - padding;
+      setIframeHeight(`${availableHeight}px`);
+    };
+
+    calculateHeight();
+    window.addEventListener('resize', calculateHeight);
+    return () => window.removeEventListener('resize', calculateHeight);
+  }, []);
+
   return (
     <React.Fragment>
-      <div className="page-content" style={{ padding: 0 }}>
+      <div className="page-content" style={{ padding: 0 }} ref={topRef}>
         <Container fluid className="p-0">
           <Row className="m-0">
             <Col xs={12} className="p-0">
@@ -53,7 +69,7 @@ const Home = () => {
                   <h4>Cargando estadísticas personalizadas...</h4>
                 </div>
               ) : !iframeUrl ? (
-                <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <div style={{ textAlign: 'center', padding: '2rem', color: "#ff4d4f" }}>
                   <h4>No se encontró un iframe configurado para este usuario.</h4>
                 </div>
               ) : (
@@ -68,7 +84,7 @@ const Home = () => {
                       src={iframeUrl}
                       style={{
                         width: '100%',
-                        height: 'calc(100vh - 160px)', // Ajusta según topbar/footer
+                        height: iframeHeight,
                         border: 'none',
                       }}
                       title="Estadísticas Metricool"
