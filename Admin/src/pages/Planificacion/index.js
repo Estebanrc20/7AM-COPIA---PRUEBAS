@@ -4,8 +4,6 @@ import {
   Container,
   Row,
   Col,
-  Card,
-  CardBody,
   Button
 } from "reactstrap";
 import MetricoolPanel from 'components/Metricool/MetricoolPanel';
@@ -30,7 +28,7 @@ const Home = () => {
       const { data, error } = await supabase
         .from("users_data")
         .select("metricoolIframe")
-        .eq("email", user.email) // puedes usar .eq("id", user.id) si usas ID como clave
+        .eq("email", user.email)
         .single();
 
       if (error) {
@@ -46,42 +44,28 @@ const Home = () => {
 
   return (
     <React.Fragment>
-      <div className="page-content">
-        <Container fluid={true}>
-          {/*<div className="page-title-box">
-            <Row className="align-items-center">
-              <Col md={8}>
-                <h6 className="page-title">Estadísticas de Metricool</h6>
-                <ol className="breadcrumb m-0">
-                  <li className="breadcrumb-item active">7AM Digital</li>
-                </ol>
-              </Col>
-            </Row>
-          </div> */}
-          <Row>
-            <Col md={12}>
-              <Card>
-                <CardBody>
-                  <MetricoolPanel />
+      <div className="page-content" style={{ padding: 0 }}>
+        <Container fluid className="p-0">
+          <Row className="m-0">
+            <Col xs={12} className="p-0" style={{ paddingBottom: "100px" }}>
+              {/* ✅ Aquí dejamos espacio al final para que no se corte el botón */}
+              <MetricoolPanel />
 
-                  {/* ✅ Botón debajo del iframe */}
-                  {iframeUrl && (
-                    <div className="text-center mt-4">
-                      <p style={{ fontSize: "14px", color: "#666" }}>
-                        Si no se carga automáticamente,&nbsp;
-                        <strong>haz clic aquí:</strong>
-                      </p>
-                      <Button
-                        style={{ backgroundColor: '#000b24', borderColor: '#000b24', color: 'white' }}
-                        size="sm"
-                        onClick={() => window.open(iframeUrl, "_blank")}>
-                        Ver en pantalla completa
-                      </Button>
-
-                    </div>
-                  )}
-                </CardBody>
-              </Card>
+              {iframeUrl && (
+                <div className="text-center" style={{ position: 'relative', marginTop: '1rem' }}>
+                  <p style={{ fontSize: "14px", color: "#666" }}>
+                    Si no se carga automáticamente,&nbsp;
+                    <strong>haz clic aquí:</strong>
+                  </p>
+                  <Button
+                    style={{ backgroundColor: '#000b24', borderColor: '#000b24', color: 'white' }}
+                    size="sm"
+                    onClick={() => window.open(iframeUrl, "_blank")}
+                  >
+                    Ver en pantalla completa
+                  </Button>
+                </div>
+              )}
             </Col>
           </Row>
         </Container>

@@ -65,7 +65,7 @@ const Home = () => {
       .from('ideas_contenido')
       .update(editedIdea)
       .eq('id', editingId)
-      .select(); // 👈 Esto trae el registro actualizado desde la base
+      .select();
 
     if (!error && data && data.length > 0) {
       setIdeas(prevIdeas =>
@@ -106,17 +106,6 @@ const Home = () => {
   return (
     <div className="page-content">
       <Container fluid>
-        <div className="page-title-box">
-          <Row className="align-items-center">
-            {/*<Col md={8}>
-              <h6 className="page-title">Ideas de Contenido</h6>
-              <ol className="breadcrumb m-0">
-                <li className="breadcrumb-item active">7AM Digital</li>
-              </ol>
-            </Col>*/}
-          </Row>
-        </div>
-
         <Card className="mb-3" style={{ backgroundColor: '#e9f2fc', border: 'none', borderRadius: '12px' }}>
           <CardBody>
             <h5 style={{ color: '#2b2f32', fontWeight: 'bold' }}>Contenido para redes</h5>
@@ -166,107 +155,105 @@ const Home = () => {
                       const isExpanded = expandedRowId === idea.id;
 
                       return (
-                        <React.Fragment key={idea.id}>
-                          <tr>
-                            <td>
-                              {isEditing ? (
-                                <Input
-                                  type="date"
-                                  value={editedIdea.fecha ? new Date(editedIdea.fecha).toISOString().split('T')[0] : ''}
-                                  onChange={(e) => handleChange('fecha', e.target.value)}
-                                />
-                              ) : idea.fecha ? new Intl.DateTimeFormat('es-CO', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                                timeZone: 'UTC'
-                              }).format(new Date(idea.fecha)) : 'Sin fecha'}
-                            </td>
-                            <td>
-                              {isEditing ? (
-                                <Input
-                                  value={editedIdea.formato}
-                                  onChange={(e) => handleChange('formato', e.target.value)}
-                                />
-                              ) : idea.formato}
-                            </td>
-                            <td>
-                              {isEditing ? (
-                                <Input
-                                  type="textarea"
-                                  value={editedIdea.idea}
-                                  onChange={(e) => handleChange('idea', e.target.value)}
-                                />
-                              ) : idea.idea}
-                            </td>
-                            <td className="d-none d-md-table-cell">
-                              {isEditing ? (
-                                <Input
-                                  value={editedIdea.categoria}
-                                  onChange={(e) => handleChange('categoria', e.target.value)}
-                                />
-                              ) : idea.categoria}
-                            </td>
-                            <td className="d-none d-md-table-cell">
-                              {isEditing ? (
-                                <Input
-                                  value={editedIdea.pilar}
-                                  onChange={(e) => handleChange('pilar', e.target.value)}
-                                />
-                              ) : idea.pilar}
-                            </td>
-                            <td>
-                              {isEditing ? (
-                                <Input
-                                  type="textarea"
-                                  value={editedIdea.instrucciones}
-                                  onChange={(e) => handleChange('instrucciones', e.target.value)}
-                                />
-                              ) : (
-                                <div style={{ whiteSpace: "pre-line" }}>
-                                  {idea.instrucciones.length > 150 ? (
-                                    <>
-                                      {isExpanded
-                                        ? idea.instrucciones
-                                        : `${idea.instrucciones.substring(0, 150)}... `}
-                                      <Button
-                                        color="link"
-                                        size="sm"
-                                        style={{ padding: 0 }}
-                                        onClick={() => toggleExpand(idea.id)}
-                                      >
-                                        {isExpanded ? 'Ver menos ↑' : 'Ver más ↓'}
-                                      </Button>
-                                    </>
-                                  ) : idea.instrucciones}
-                                </div>
-                              )}
-                            </td>
-                            <td>
-                              <div className="d-flex flex-column align-items-center gap-2">
-                                {isEditing ? (
+                        <tr key={idea.id}>
+                          <td>
+                            {isEditing ? (
+                              <Input
+                                type="date"
+                                value={editedIdea.fecha ? new Date(editedIdea.fecha).toISOString().split('T')[0] : ''}
+                                onChange={(e) => handleChange('fecha', e.target.value)}
+                              />
+                            ) : idea.fecha ? new Intl.DateTimeFormat('es-CO', {
+                              day: '2-digit',
+                              month: '2-digit',
+                              year: 'numeric',
+                              timeZone: 'UTC'
+                            }).format(new Date(idea.fecha)) : 'Sin fecha'}
+                          </td>
+                          <td>
+                            {isEditing ? (
+                              <Input
+                                value={editedIdea.formato || ''}
+                                onChange={(e) => handleChange('formato', e.target.value)}
+                              />
+                            ) : idea.formato}
+                          </td>
+                          <td>
+                            {isEditing ? (
+                              <Input
+                                type="textarea"
+                                value={editedIdea.idea || ''}
+                                onChange={(e) => handleChange('idea', e.target.value)}
+                              />
+                            ) : idea.idea}
+                          </td>
+                          <td className="d-none d-md-table-cell">
+                            {isEditing ? (
+                              <Input
+                                value={editedIdea.categoria || ''}
+                                onChange={(e) => handleChange('categoria', e.target.value)}
+                              />
+                            ) : idea.categoria}
+                          </td>
+                          <td className="d-none d-md-table-cell">
+                            {isEditing ? (
+                              <Input
+                                value={editedIdea.pilar || ''}
+                                onChange={(e) => handleChange('pilar', e.target.value)}
+                              />
+                            ) : idea.pilar}
+                          </td>
+                          <td>
+                            {isEditing ? (
+                              <Input
+                                type="textarea"
+                                value={editedIdea.instrucciones || ''}
+                                onChange={(e) => handleChange('instrucciones', e.target.value)}
+                              />
+                            ) : (
+                              <div style={{ whiteSpace: "pre-line" }}>
+                                {idea.instrucciones.length > 150 ? (
                                   <>
-                                    <Button color="success" size="sm" onClick={handleSave}>
-                                      Guardar
-                                    </Button>
-                                    <Button color="secondary" size="sm" onClick={handleCancel}>
-                                      Cancelar
+                                    {isExpanded
+                                      ? idea.instrucciones
+                                      : `${idea.instrucciones.substring(0, 150)}... `}
+                                    <Button
+                                      color="link"
+                                      size="sm"
+                                      style={{ padding: 0 }}
+                                      onClick={() => toggleExpand(idea.id)}
+                                    >
+                                      {isExpanded ? 'Ver menos ↑' : 'Ver más ↓'}
                                     </Button>
                                   </>
-                                ) : (
-                                  <>
-                                    <Button color="warning" size="sm" onClick={() => handleEdit(idea)}>
-                                      Editar
-                                    </Button>
-                                    <Button color="danger" size="sm" onClick={() => handleDelete(idea.id)}>
-                                      Eliminar
-                                    </Button>
-                                  </>
-                                )}
+                                ) : idea.instrucciones}
                               </div>
-                            </td>
-                          </tr>
-                        </React.Fragment>
+                            )}
+                          </td>
+                          <td>
+                            <div className="d-flex flex-column align-items-center gap-2">
+                              {isEditing ? (
+                                <>
+                                  <Button color="success" size="sm" onClick={handleSave}>
+                                    Guardar
+                                  </Button>
+                                  <Button color="secondary" size="sm" onClick={handleCancel}>
+                                    Cancelar
+                                  </Button>
+                                </>
+                              ) : (
+                                <>
+                                  <Button color="warning" size="sm" onClick={() => handleEdit(idea)}>
+                                    Editar
+                                  </Button>
+                                  <Button color="danger" size="sm" onClick={() => handleDelete(idea.id)}>
+                                    Eliminar
+                                  </Button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
                       );
                     })}
                   </tbody>
