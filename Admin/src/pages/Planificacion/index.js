@@ -53,7 +53,7 @@ const Home = () => {
       </div>
 
       {/* Footer fijo */}
-      <footer style={{
+      {/*<footer style={{
         textAlign: "center",
         padding: "1rem",
         background: "#f8f9fa",
@@ -66,7 +66,7 @@ const Home = () => {
         zIndex: 999
       }}>
         © 2025 7AM Digital
-      </footer>
+      </footer>*/}
     </React.Fragment>
   );
 };
