@@ -4,7 +4,7 @@ import { supabase } from '../../supabaseClient';
 const MetricoolPanel = () => {
   const [iframe, setIframe] = useState('');
   const [loading, setLoading] = useState(true);
-  const [sidebarWidth, setSidebarWidth] = useState(240);
+  const [leftPadding, setLeftPadding] = useState(240); // menú abierto
 
   useEffect(() => {
     const fetchIframe = async () => {
@@ -37,52 +37,51 @@ const MetricoolPanel = () => {
     fetchIframe();
   }, []);
 
+  // Verifica si el menú está colapsado según una clase en el body o layout
   useEffect(() => {
-    const sidebar = document.querySelector('aside') || document.querySelector('.sidebar') || document.querySelector('#sidebar');
-    const observer = new ResizeObserver(entries => {
-      for (let entry of entries) {
-        const width = entry.contentRect.width;
-        setSidebarWidth(width);
-      }
-    });
+    const checkSidebarState = () => {
+      const isCollapsed =
+        document.body.classList.contains('collapsed') ||
+        document.body.classList.contains('sidebar-mini') ||
+        document.querySelector('aside')?.offsetWidth < 100;
 
-    if (sidebar) observer.observe(sidebar);
+      setLeftPadding(isCollapsed ? 70 : 240);
+    };
+
+    checkSidebarState();
+
+    const resizeObserver = new ResizeObserver(() => checkSidebarState());
+    const sidebar = document.querySelector('aside');
+
+    if (sidebar) {
+      resizeObserver.observe(sidebar);
+    }
+
+    const interval = setInterval(checkSidebarState, 500); // respaldo
 
     return () => {
-      if (sidebar) observer.unobserve(sidebar);
+      if (sidebar) resizeObserver.disconnect();
+      clearInterval(interval);
     };
   }, []);
 
-  const wrapperStyle = {
-    position: 'fixed',
+  const commonStyle = {
+    position: 'absolute',
     top: 0,
-    left: sidebarWidth,
+    left: leftPadding,
     right: 0,
     bottom: 0,
     zIndex: 1,
-    backgroundColor: '#fff',
-    transition: 'left 0.3s ease-in-out'
-  };
-
-  const iframeStyle = {
-    width: '100%',
-    height: '100%',
-    border: 'none',
-    overflow: 'auto'
-  };
-
-  const messageStyle = {
-    ...wrapperStyle,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     textAlign: 'center',
-    padding: '1rem'
+    transition: 'left 0.3s ease'
   };
 
   if (loading) {
     return (
-      <div style={messageStyle}>
+      <div style={commonStyle}>
         <h4>Cargando estadísticas personalizadas...</h4>
       </div>
     );
@@ -90,17 +89,24 @@ const MetricoolPanel = () => {
 
   if (!iframe) {
     return (
-      <div style={messageStyle}>
+      <div style={commonStyle}>
         <h4>No se encontró un iframe configurado para este usuario.</h4>
       </div>
     );
   }
 
   return (
-    <div style={wrapperStyle}>
+    <div style={{
+      ...commonStyle,
+      padding: 0,
+    }}>
       <iframe
         src={iframe}
-        style={iframeStyle}
+        style={{
+          width: '100%',
+          height: '100%',
+          border: 'none'
+        }}
         title="Estadísticas Metricool"
       />
     </div>
