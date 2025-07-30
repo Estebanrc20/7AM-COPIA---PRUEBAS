@@ -38,13 +38,7 @@ const MetricoolPanel = () => {
 
   if (loading) {
     return (
-      <div style={{
-        height: 'calc(100vh - 130px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center'
-      }}>
+      <div style={{ padding: '0rem', textAlign: 'center' }}>
         <h4>Cargando estadísticas personalizadas...</h4>
       </div>
     );
@@ -52,27 +46,20 @@ const MetricoolPanel = () => {
 
   if (!iframe) {
     return (
-      <div style={{
-        height: 'calc(100vh - 130px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center'
-      }}>
+      <div style={{ padding: '0rem', textAlign: 'center' }}>
         <h4>No se encontró un iframe configurado para este usuario.</h4>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '0rem', textAlign: 'center' }}>
+    <div style={{ position: 'absolute', top: 0, left: 240, right: 0, bottom: 0, zIndex: 1 }}>
       <iframe
         src={iframe}
         style={{
           width: '100%',
-          height: '100vh',
-          border: 'none',
-          overflow: 'hidden'
+          height: '100%',
+          border: 'none'
         }}
         title="Estadísticas Metricool"
       />
