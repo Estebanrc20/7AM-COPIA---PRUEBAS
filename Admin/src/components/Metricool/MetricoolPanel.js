@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
 
 const MetricoolPanel = () => {
-  const [iframe, setIframe] = useState("");
+  const [iframe, setIframe] = useState('');
   const [loading, setLoading] = useState(true);
-  const [leftPadding, setLeftPadding] = useState(240); // ancho inicial del menú expandido
+  const [sidebarWidth, setSidebarWidth] = useState(240);
 
   useEffect(() => {
     const fetchIframe = async () => {
@@ -37,13 +37,12 @@ const MetricoolPanel = () => {
     fetchIframe();
   }, []);
 
-  // Detectar cambio del ancho del menú
   useEffect(() => {
     const sidebar = document.querySelector('aside') || document.querySelector('.sidebar') || document.querySelector('#sidebar');
     const observer = new ResizeObserver(entries => {
       for (let entry of entries) {
-        const newWidth = entry.contentRect.width;
-        setLeftPadding(newWidth);
+        const width = entry.contentRect.width;
+        setSidebarWidth(width);
       }
     });
 
@@ -54,23 +53,36 @@ const MetricoolPanel = () => {
     };
   }, []);
 
-  const commonStyle = {
-    position: 'absolute',
+  const wrapperStyle = {
+    position: 'fixed',
     top: 0,
-    left: leftPadding,
+    left: sidebarWidth,
     right: 0,
     bottom: 0,
     zIndex: 1,
+    backgroundColor: '#fff',
+    transition: 'left 0.3s ease-in-out'
+  };
+
+  const iframeStyle = {
+    width: '100%',
+    height: '100%',
+    border: 'none',
+    overflow: 'auto'
+  };
+
+  const messageStyle = {
+    ...wrapperStyle,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: '1rem',
-    textAlign: 'center'
+    textAlign: 'center',
+    padding: '1rem'
   };
 
   if (loading) {
     return (
-      <div style={commonStyle}>
+      <div style={messageStyle}>
         <h4>Cargando estadísticas personalizadas...</h4>
       </div>
     );
@@ -78,28 +90,17 @@ const MetricoolPanel = () => {
 
   if (!iframe) {
     return (
-      <div style={commonStyle}>
+      <div style={messageStyle}>
         <h4>No se encontró un iframe configurado para este usuario.</h4>
       </div>
     );
   }
 
   return (
-    <div style={{
-      position: 'absolute',
-      top: 0,
-      left: leftPadding,
-      right: 0,
-      bottom: 0,
-      zIndex: 1
-    }}>
+    <div style={wrapperStyle}>
       <iframe
         src={iframe}
-        style={{
-          width: '100%',
-          height: '100%',
-          border: 'none'
-        }}
+        style={iframeStyle}
         title="Estadísticas Metricool"
       />
     </div>
