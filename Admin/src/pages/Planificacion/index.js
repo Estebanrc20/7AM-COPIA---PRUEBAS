@@ -1,12 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardBody
-} from "reactstrap";
 import MetricoolPanel from 'components/Metricool/MetricoolPanel';
 import { supabase } from '../../supabaseClient';
 
@@ -55,20 +48,8 @@ const Home = () => {
 
   return (
     <React.Fragment>
-      <div className="page-content">
-        <Container fluid={true}>
-          <Row>
-            <Col md={12}>
-              <Card>
-                <CardBody style={{ paddingBottom: '60px' }}>
-                  <div style={{ paddingBottom: '60px' }}>
-                    <MetricoolPanel />
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
+      <div className="page-content" style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+        <MetricoolPanel />
       </div>
 
       {/* Footer fijo */}
@@ -79,8 +60,8 @@ const Home = () => {
         color: "#333",
         position: "fixed",
         bottom: 0,
-        left: 240, // ← compensar el sidebar
-        width: "calc(100% - 240px)", // ← ajustarse al espacio restante
+        left: 240,
+        width: "calc(100% - 240px)",
         fontSize: "14px",
         zIndex: 999
       }}>

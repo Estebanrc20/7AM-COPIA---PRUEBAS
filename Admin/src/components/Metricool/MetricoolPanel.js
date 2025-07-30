@@ -53,18 +53,16 @@ const MetricoolPanel = () => {
   }
 
   return (
-    <div style={{ padding: '0rem', textAlign: 'center' }}>
-      <iframe
-  src={iframe}
-  style={{
-    width: '100%',
-    height: '100vh',
-    border: 'none',
-    overflow: 'hidden'
-  }}
-  title="Estadísticas Metricool"
-/>
-    </div>
+    <iframe
+      src={iframe}
+      style={{
+        width: '100vw',
+        height: '100vh',
+        border: 'none',
+        overflow: 'hidden'
+      }}
+      title="Estadísticas Metricool"
+    />
   );
 };
 
