@@ -75,7 +75,7 @@ const Home = () => {
                     />
                   </div>
 
-                  {/*<div style={{ textAlign: 'center', padding: '1rem' }}>
+                  <div style={{ textAlign: 'center', padding: '1rem' }}>
                     <p style={{ fontSize: "14px", color: "#666" }}>
                       Si no se carga automáticamente,&nbsp;
                       <strong>haz clic aquí:</strong>
@@ -93,7 +93,7 @@ const Home = () => {
                     >
                       Ver en pantalla completa
                     </Button>
-                  </div>*/}
+                  </div>
                 </div>
               )}
             </Col>
