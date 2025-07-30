@@ -38,8 +38,8 @@ const Home = () => {
       if (error) {
         console.error("❌ Error al consultar la tabla users_data:", error);
       } else {
-        console.log("✅ iframe encontrado:", data.metricoolIframe);
-        setIframeUrl(data.metricoolIframe);
+        console.log("✅ iframe encontrado:", data.inbox);
+        setIframeUrl(data.inbox);
       }
     };
 
