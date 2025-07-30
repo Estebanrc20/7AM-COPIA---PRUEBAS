@@ -52,21 +52,6 @@ const Home = () => {
         <MetricoolPanel />
       </div>
 
-      {/* Footer fijo */}
-      {/*<footer style={{
-        textAlign: "center",
-        padding: "1rem",
-        background: "#f8f9fa",
-        color: "#333",
-        position: "fixed",
-        bottom: 0,
-        left: 240,
-        width: "calc(100% - 240px)",
-        fontSize: "14px",
-        zIndex: 999
-      }}>
-        © 2025 7AM Digital
-      </footer>*/}
     </React.Fragment>
   );
 };
