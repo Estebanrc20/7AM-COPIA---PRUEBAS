@@ -56,10 +56,11 @@ const MetricoolPanel = () => {
     <iframe
       src={iframe}
       style={{
-        width: '100vw',
+        width: 'calc(100vw - 240px)', // ocupar solo lo visible del contenido
         height: '100vh',
         border: 'none',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        marginLeft: '240px' // compensar el sidebar
       }}
       title="Estadísticas Metricool"
     />
