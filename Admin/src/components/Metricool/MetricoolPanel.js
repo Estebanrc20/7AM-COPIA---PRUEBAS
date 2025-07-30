@@ -4,6 +4,7 @@ import { supabase } from '../../supabaseClient';
 const MetricoolPanel = () => {
   const [iframe, setIframe] = useState("");
   const [loading, setLoading] = useState(true);
+  const [leftPadding, setLeftPadding] = useState(240); // ancho inicial del menú expandido
 
   useEffect(() => {
     const fetchIframe = async () => {
@@ -36,16 +37,40 @@ const MetricoolPanel = () => {
     fetchIframe();
   }, []);
 
+  // Detectar cambio del ancho del menú
+  useEffect(() => {
+    const sidebar = document.querySelector('aside') || document.querySelector('.sidebar') || document.querySelector('#sidebar');
+    const observer = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const newWidth = entry.contentRect.width;
+        setLeftPadding(newWidth);
+      }
+    });
+
+    if (sidebar) observer.observe(sidebar);
+
+    return () => {
+      if (sidebar) observer.unobserve(sidebar);
+    };
+  }, []);
+
+  const commonStyle = {
+    position: 'absolute',
+    top: 0,
+    left: leftPadding,
+    right: 0,
+    bottom: 0,
+    zIndex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '1rem',
+    textAlign: 'center'
+  };
+
   if (loading) {
     return (
-      <div style={{
-        height: 'calc(100vh - 130px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        width: '100%'
-      }}>
+      <div style={commonStyle}>
         <h4>Cargando estadísticas personalizadas...</h4>
       </div>
     );
@@ -53,14 +78,7 @@ const MetricoolPanel = () => {
 
   if (!iframe) {
     return (
-      <div style={{
-        height: 'calc(100vh - 130px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
-        width: '100%'
-      }}>
+      <div style={commonStyle}>
         <h4>No se encontró un iframe configurado para este usuario.</h4>
       </div>
     );
@@ -68,15 +86,19 @@ const MetricoolPanel = () => {
 
   return (
     <div style={{
-      width: '100%',
-      height: 'calc(100vh - 130px)', // misma altura para consistencia
+      position: 'absolute',
+      top: 0,
+      left: leftPadding,
+      right: 0,
+      bottom: 0,
+      zIndex: 1
     }}>
       <iframe
         src={iframe}
         style={{
           width: '100%',
           height: '100%',
-          border: 'none',
+          border: 'none'
         }}
         title="Estadísticas Metricool"
       />
