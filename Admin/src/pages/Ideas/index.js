@@ -212,11 +212,11 @@ const Home = () => {
                               />
                             ) : (
                               <div style={{ whiteSpace: "pre-line" }}>
-                                {idea.instrucciones.length > 150 ? (
+                                {idea.instrucciones.length > 60 ? (
                                   <>
                                     {isExpanded
                                       ? idea.instrucciones
-                                      : `${idea.instrucciones.substring(0, 150)}... `}
+                                      : `${idea.instrucciones.substring(0, 60)}... `}
                                     <Button
                                       color="link"
                                       size="sm"
