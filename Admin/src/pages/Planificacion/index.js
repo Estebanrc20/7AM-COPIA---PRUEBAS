@@ -1,12 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardBody
-} from "reactstrap";
 import MetricoolPanel from 'components/Metricool/MetricoolPanel';
 import { supabase } from '../../supabaseClient';
 
@@ -15,6 +8,7 @@ const Home = () => {
 
   const [iframeUrl, setIframeUrl] = useState("");
 
+  // Quitar scroll vertical
   useEffect(() => {
     document.body.style.overflowY = "hidden";
     document.documentElement.style.overflowY = "hidden";
@@ -54,20 +48,8 @@ const Home = () => {
 
   return (
     <React.Fragment>
-      <div className="page-content">
-        <Container fluid={true}>
-          <Row>
-            <Col md={12}>
-              <Card>
-                <CardBody style={{ paddingBottom: '60px' }}>
-                  <div style={{ paddingBottom: '60px' }}>
-                    <MetricoolPanel />
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
+      <div className="page-content" style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+        <MetricoolPanel />
       </div>
 
       {/* Footer fijo */}
