@@ -13,6 +13,10 @@ import {
 } from "reactstrap";
 import { supabase } from '../../supabaseClient';
 
+const formatoOptions = ["reel", "post", "story"];
+const categoriaOptions = ["atencion", "interes", "deseo", "accion"];
+const pilarOptions = ["educativo", "comercial", "inspiracional", "entretenimiento", "entretenido"];
+
 const Home = () => {
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,28 +59,49 @@ const Home = () => {
     setEditedIdea({ ...idea });
   };
 
-  const handleCancel = () => {
+   const handleCancel = () => {
+    if (String(editingId).startsWith("nuevo-")) {
+      setIdeas(prevIdeas => prevIdeas.filter(i => i.id !== editingId));
+    }
     setEditingId(null);
     setEditedIdea({});
   };
 
   const handleSave = async () => {
-    const { data, error } = await supabase
-      .from('ideas_contenido')
-      .update(editedIdea)
-      .eq('id', editingId)
-      .select();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      console.error("Usuario no autenticado.");
+      return;
+    }
+
+    let data, error;
+
+    if (String(editingId).startsWith("nuevo-")) {
+      const nuevoRegistro = {
+        ...editedIdea,
+        user_id: user.id,
+      };
+      ({ data, error } = await supabase
+        .from("ideas_contenido")
+        .insert([nuevoRegistro])
+        .select());
+    } else {
+      ({ data, error } = await supabase
+        .from("ideas_contenido")
+        .update(editedIdea)
+        .eq("id", editingId)
+        .select());
+    }
 
     if (!error && data && data.length > 0) {
-      setIdeas(prevIdeas =>
-        prevIdeas.map(idea =>
-          idea.id === editingId ? data[0] : idea
-        )
-      );
+      setIdeas(prevIdeas => {
+        const filtrado = prevIdeas.filter(i => i.id !== editingId);
+        return [data[0], ...filtrado];
+      });
       setEditingId(null);
       setEditedIdea({});
     } else {
-      console.error("Error actualizando idea:", error?.message);
+      console.error("Error guardando idea:", error?.message);
     }
   };
 
@@ -101,10 +126,44 @@ const Home = () => {
     setExpandedRowId(prevId => (prevId === id ? null : id));
   };
 
+  const getBadgeStyle = (type, value) => {
+    const colors = {
+      formato: {
+        reel: { bg: "#d1ecf1", color: "#0c5460" },
+        post: { bg: "#d4edda", color: "#155724" },
+        story: { bg: "#f8d7da", color: "#721c24" },
+      },
+      categoria: {
+        atencion: { bg: "#f8d7da", color: "#721c24" },
+        interes: { bg: "#03030331", color: "#383d41" },
+        deseo: { bg: "#e2ce8bbe", color: "#856404" },
+        accion: { bg: "#d1ecf1", color: "#0c5460" },
+      },
+      pilar: {
+        educativo: { bg: "#d1ecf1", color: "#0c5460" },
+        comercial: { bg: "#d4edda", color: "#155724" },
+        inspiracional: { bg: "#fff3cd", color: "#856404" },
+        entretenimiento: { bg: "#f8d7da", color: "#721c24" },
+        entretenido: { bg: "#e2e3e5", color: "#383d41" },
+      },
+    };
+
+    const item = colors[type]?.[value?.toLowerCase()] || { bg: "#f0f0f0", color: "#333" };
+    return {
+      backgroundColor: item.bg,
+      color: item.color,
+      padding: '4px 8px',
+      borderRadius: '8px',
+      fontWeight: 500,
+      display: 'inline-block'
+    };
+  };
+
   document.title = "Ideas | 7 AM Digital";
 
   return (
     <div className="page-content">
+      <br />
       <Container fluid>
         <Card className="mb-3" style={{ backgroundColor: '#e9f2fc', border: 'none', borderRadius: '12px' }}>
           <CardBody>
@@ -112,12 +171,40 @@ const Home = () => {
             <p style={{ marginBottom: 0, color: '#5a5a5a' }}>
               Cada mes te entregaremos nuevas ideas de contenido generadas por nuestro algoritmo de IA,
               basadas en la información de tu negocio y tus mejores publicaciones en redes sociales.
-              Si quieres editar la información de tu negocio puedes ir a la sección <strong>Mi Negocio</strong>.
             </p>
           </CardBody>
         </Card>
 
         <Row className="mb-3">
+          <Col className="text-start">
+            <Button
+              style={{ backgroundColor: "#000b24", color: "#fff" }}
+              onClick={() => {
+                const hoy = new Date().toISOString().split('T')[0];
+                const nuevoId = `nuevo-${Date.now()}`;
+                setIdeas(prev => [{
+                  id: nuevoId,
+                  fecha: hoy,
+                  formato: '',
+                  idea: '',
+                  categoria: '',
+                  pilar: '',
+                  instrucciones: '',
+                }, ...prev]);
+                setEditingId(nuevoId);
+                setEditedIdea({
+                  fecha: hoy,
+                  formato: '',
+                  idea: '',
+                  categoria: '',
+                  pilar: '',
+                  instrucciones: ''
+                });
+              }}
+            >
+              + Agregar contenido
+            </Button>
+          </Col>
           <Col className="text-end">
             <Button style={{ backgroundColor: "#000b24", color: "#fff" }}>
               Sincronizar con Metricool
@@ -160,7 +247,7 @@ const Home = () => {
                             {isEditing ? (
                               <Input
                                 type="date"
-                                value={editedIdea.fecha ? new Date(editedIdea.fecha).toISOString().split('T')[0] : ''}
+                                value={editedIdea.fecha || ''}
                                 onChange={(e) => handleChange('fecha', e.target.value)}
                               />
                             ) : idea.fecha ? new Intl.DateTimeFormat('es-CO', {
@@ -172,11 +259,13 @@ const Home = () => {
                           </td>
                           <td>
                             {isEditing ? (
-                              <Input
-                                value={editedIdea.formato || ''}
-                                onChange={(e) => handleChange('formato', e.target.value)}
-                              />
-                            ) : idea.formato}
+                              <Input type="select" value={editedIdea.formato || ''} onChange={(e) => handleChange('formato', e.target.value)}>
+                                <option value="">--</option>
+                                {formatoOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                              </Input>
+                            ) : (
+                              <span style={getBadgeStyle('formato', idea.formato)}>{idea.formato}</span>
+                            )}
                           </td>
                           <td>
                             {isEditing ? (
@@ -189,19 +278,23 @@ const Home = () => {
                           </td>
                           <td className="d-none d-md-table-cell">
                             {isEditing ? (
-                              <Input
-                                value={editedIdea.categoria || ''}
-                                onChange={(e) => handleChange('categoria', e.target.value)}
-                              />
-                            ) : idea.categoria}
+                              <Input type="select" value={editedIdea.categoria || ''} onChange={(e) => handleChange('categoria', e.target.value)}>
+                                <option value="">--</option>
+                                {categoriaOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                              </Input>
+                            ) : (
+                              <span style={getBadgeStyle('categoria', idea.categoria)}>{idea.categoria}</span>
+                            )}
                           </td>
                           <td className="d-none d-md-table-cell">
                             {isEditing ? (
-                              <Input
-                                value={editedIdea.pilar || ''}
-                                onChange={(e) => handleChange('pilar', e.target.value)}
-                              />
-                            ) : idea.pilar}
+                              <Input type="select" value={editedIdea.pilar || ''} onChange={(e) => handleChange('pilar', e.target.value)}>
+                                <option value="">--</option>
+                                {pilarOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                              </Input>
+                            ) : (
+                              <span style={getBadgeStyle('pilar', idea.pilar)}>{idea.pilar}</span>
+                            )}
                           </td>
                           <td>
                             {isEditing ? (
@@ -214,9 +307,7 @@ const Home = () => {
                               <div style={{ whiteSpace: "pre-line" }}>
                                 {idea.instrucciones.length > 60 ? (
                                   <>
-                                    {isExpanded
-                                      ? idea.instrucciones
-                                      : `${idea.instrucciones.substring(0, 60)}... `}
+                                    {isExpanded ? idea.instrucciones : `${idea.instrucciones.substring(0, 60)}... `}
                                     <Button
                                       color="link"
                                       size="sm"
@@ -246,7 +337,12 @@ const Home = () => {
                                   <Button color="warning" size="sm" onClick={() => handleEdit(idea)}>
                                     Editar
                                   </Button>
-                                  <Button color="danger" size="sm" onClick={() => handleDelete(idea.id)}>
+                                  <Button
+                                    color="danger"
+                                    size="sm"
+                                    onClick={() => handleDelete(idea.id)}
+                                    disabled={String(idea.id).startsWith("nuevo-")}
+                                  >
                                     Eliminar
                                   </Button>
                                 </>

@@ -8,11 +8,14 @@ import {
   CardBody,
   Button
 } from "reactstrap";
+import { useNavigate } from "react-router-dom"; // 👈 Importación añadida
 import { supabase } from "../../supabaseClient";
 
 const Home = () => {
   const [userName, setUserName] = useState("");
-  const [hoveredBtn, setHoveredBtn] = useState(null); // Nuevo estado para hover
+  const [hoveredBtn, setHoveredBtn] = useState(null);
+
+  const navigate = useNavigate(); // 👈 Hook para navegar
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -39,7 +42,6 @@ const Home = () => {
 
   document.title = "Home | 7 AM Digital";
 
-  // Estilo dinámico del botón
   const getButtonStyle = (hover) => ({
     backgroundColor: hover ? "#000b24" : "#000b24",
     borderColor: "#6C63FF",
@@ -55,8 +57,6 @@ const Home = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid={true}>
-
-          {/* Título y subtítulo */}
           <div className="page-title-box mb-4">
             <Row className="align-items-center">
               <Col md={8}>
@@ -68,7 +68,6 @@ const Home = () => {
             </Row>
           </div>
 
-          {/* Card de bienvenida */}
           <Row className="justify-content-center mb-5 mt-2">
             <Col md={10} lg={8}>
               <Card
@@ -95,7 +94,6 @@ const Home = () => {
             </Col>
           </Row>
 
-          {/* Tarjetas con botones dinámicos */}
           <Row>
             {/* Tarjeta 1 */}
             <Col md={4} className="mb-4">
@@ -116,6 +114,7 @@ const Home = () => {
                     style={getButtonStyle(hoveredBtn === 1)}
                     onMouseEnter={() => setHoveredBtn(1)}
                     onMouseLeave={() => setHoveredBtn(null)}
+                    onClick={() => navigate("/Planificacion")} // 👈 Redirección aquí
                   >
                     Ir ahora
                   </Button>
@@ -143,7 +142,7 @@ const Home = () => {
                     onMouseEnter={() => setHoveredBtn(2)}
                     onMouseLeave={() => setHoveredBtn(null)}
                   >
-                    Ir ahora
+                    Proximamente...
                   </Button>
                 </CardBody>
               </Card>
@@ -169,7 +168,7 @@ const Home = () => {
                     onMouseEnter={() => setHoveredBtn(3)}
                     onMouseLeave={() => setHoveredBtn(null)}
                   >
-                    Ir ahora
+                    Proximamente...
                   </Button>
                 </CardBody>
               </Card>
