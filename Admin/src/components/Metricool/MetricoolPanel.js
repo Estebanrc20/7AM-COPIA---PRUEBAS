@@ -36,18 +36,15 @@ const MetricoolPanel = () => {
     fetchIframe();
   }, []);
 
-  const centeredStyle = {
-    minHeight: 'calc(100vh - 130px)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    padding: '1rem'
-  };
-
   if (loading) {
     return (
-      <div style={centeredStyle}>
+      <div style={{
+        height: 'calc(100vh - 130px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center'
+      }}>
         <h4>Cargando estadísticas personalizadas...</h4>
       </div>
     );
@@ -55,7 +52,13 @@ const MetricoolPanel = () => {
 
   if (!iframe) {
     return (
-      <div style={centeredStyle}>
+      <div style={{
+        height: 'calc(100vh - 130px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign: 'center'
+      }}>
         <h4>No se encontró un iframe configurado para este usuario.</h4>
       </div>
     );
