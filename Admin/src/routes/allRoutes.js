@@ -17,8 +17,20 @@ import ResetPasswordPage from "pages/Authentication/ResetPassword";
 // Home
 import Home from "../pages/Home/index";
 
+// Planeacion
+import Planeacion from "../pages/Planeacion";
+
+// Inbox
+import Inbox from "../pages/Inbox";
+
 // Planificacion
 import Planificacion from "../pages/Planificacion";
+
+// SmartLinks
+import SmartLinks from "../pages/SmartLinks";
+
+// Anuncios
+import Anuncios from "../pages/Anuncios";
 
 // Plantillas
 import Plantillas from "../pages/Plantillas";
@@ -42,8 +54,20 @@ const userRoutes = [
 
   
 
-  // Planificacion 
+  // Planeacion
+  { path: "/planeacion", component: <Planeacion />},
+  
+  // Inbox
+  { path: "/inbox", component: <Inbox />},
+
+  // Planificacion
   { path: "/planificacion", component: <Planificacion />},
+
+  // SmartLinks
+  { path: "/smartlinks", component: <SmartLinks />},
+
+  // Anuncios
+  { path: "/anuncios", component: <Anuncios />},
 
   // Plantillas
   { path: "/plantillas", component: <Plantillas />},

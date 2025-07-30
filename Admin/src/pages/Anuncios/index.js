@@ -9,7 +9,7 @@ import {
 } from "reactstrap";
 
 const Home = () => {
-  document.title = "Planificacion | 7 AM Digital";
+  document.title = "Anuncios| 7 AM Digital";
 
   return (
     <React.Fragment>

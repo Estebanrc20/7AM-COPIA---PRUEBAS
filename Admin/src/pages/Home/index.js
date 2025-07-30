@@ -114,7 +114,7 @@ const Home = () => {
                     style={getButtonStyle(hoveredBtn === 1)}
                     onMouseEnter={() => setHoveredBtn(1)}
                     onMouseLeave={() => setHoveredBtn(null)}
-                    onClick={() => navigate("/Planificacion")} // 👈 Redirección aquí
+                    onClick={() => navigate("/Planeacion")} // 👈 Redirección aquí
                   >
                     Ir ahora
                   </Button>

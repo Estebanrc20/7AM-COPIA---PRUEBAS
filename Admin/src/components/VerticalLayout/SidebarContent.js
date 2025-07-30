@@ -118,7 +118,6 @@ const SidebarContent = props => {
     activeMenu();
   }, [activeMenu]);
 
-  // Cierra menú móvil y limpia clases activas
   useEffect(() => {
     const handleLinkClick = () => {
       if (window.innerWidth < 992) {
@@ -141,7 +140,6 @@ const SidebarContent = props => {
     };
   }, []);
 
-  // Restaurar títulos al expandir el menú
   useEffect(() => {
     const observer = new MutationObserver(() => {
       if (!document.body.classList.contains("vertical-collpsed")) {
@@ -180,12 +178,42 @@ const SidebarContent = props => {
             </li>
 
             <li>
-              <Link to="/Planificacion" className="waves-effect" id="menu-plan">
-                <i className="ti-bar-chart"></i>
-                <span className="menu-text">{props.t("Planificación y Analitica")}</span>
-              </Link>
-            </li>
+              <Link
+                to="/Planeacion"
+                className="has-arrow waves-effect"
+                id="menu-plan"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const submenu = document.getElementById("planeacionSubmenu");
+                  const parentLi = e.currentTarget.parentElement;
 
+                  if (submenu) {
+                    submenu.classList.toggle("mm-show");
+                    parentLi.classList.toggle("mm-active");
+                  }
+
+                  props.router.navigate("/Planeacion");
+                }}
+              >
+                <i className="ti-bar-chart"></i>
+                <span className="menu-text">{props.t("Planeación")}</span>
+              </Link>
+
+              <ul className="sub-menu" id="planeacionSubmenu" aria-expanded="false">
+                <li>
+                  <Link to="/Inbox">{props.t("Inbox")}</Link>
+                </li>
+                <li>
+                  <Link to="/Planificacion">{props.t("Planificación")}</Link>
+                </li>
+                <li>
+                  <Link to="/SmartLinks">{props.t("SmartLinks")}</Link>
+                </li>
+                <li>
+                  <Link to="/Anuncios">{props.t("Anuncios")}</Link>
+                </li>
+              </ul>
+            </li>
             <li>
               <Link to="/Plantillas" className="waves-effect" id="menu-plantillas">
                 <i className="ti-layout"></i>
@@ -216,6 +244,7 @@ const SidebarContent = props => {
 SidebarContent.propTypes = {
   location: PropTypes.object,
   t: PropTypes.any,
+  router: PropTypes.object,
 };
 
 export default withRouter(withTranslation()(SidebarContent));
