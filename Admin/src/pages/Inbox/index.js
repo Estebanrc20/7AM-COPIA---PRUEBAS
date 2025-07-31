@@ -50,7 +50,7 @@ const Home = () => {
     <React.Fragment>
       <div className="page-content" style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
         {iframeUrl ? (
-          <iframe
+          <iframe referrerPolicy='origin'
             src={iframeUrl}
             title="Panel de Inbox"
             width="100%"
