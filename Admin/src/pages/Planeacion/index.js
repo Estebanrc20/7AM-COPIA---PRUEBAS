@@ -1,25 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from "react";
-import MetricoolPanel from 'components/Metricool/MetricoolPanel';
 import { supabase } from '../../supabaseClient';
 
 const Home = () => {
-  document.title = "Planeacion | 7 AM Digital";
+  document.title = "Planeación | 7 AM Digital";
 
-  const [iframeUrl, setIframeUrl] = useState("");
-
-  // Quitar scroll vertical
-  useEffect(() => {
-    document.body.style.overflowY = "hidden";
-    document.documentElement.style.overflowY = "hidden";
-    return () => {
-      document.body.style.overflowY = "auto";
-      document.documentElement.style.overflowY = "auto";
-    };
-  }, []);
+  const [inboxUrl, setInboxUrl] = useState("");
 
   useEffect(() => {
-    const fetchIframeUrl = async () => {
+    const fetchInboxUrl = async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
 
       if (userError || !user) {
@@ -27,32 +16,51 @@ const Home = () => {
         return;
       }
 
-      console.log("✅ Usuario logueado:", user.email);
-
       const { data, error } = await supabase
         .from("users_data")
-        .select("metricoolIframe")
+        .select("inbox")
         .eq("email", user.email)
         .single();
 
       if (error) {
         console.error("❌ Error al consultar la tabla users_data:", error);
       } else {
-        console.log("✅ iframe encontrado:", data.metricoolIframe);
-        setIframeUrl(data.metricoolIframe);
+        let url = data.inbox;
+        // Si ya tiene parámetros, usa &redirect=Inbox, si no, usa ?redirect=Inbox
+        if (url) {
+          url += url.includes("?") ? "&redirect=Inbox" : "?redirect=Inbox";
+          setInboxUrl(url);
+        }
       }
     };
 
-    fetchIframeUrl();
+    fetchInboxUrl();
   }, []);
 
   return (
-    <React.Fragment>
-      <div className="page-content" style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
-        <MetricoolPanel />
-      </div>
-
-    </React.Fragment>
+    <div className="page-content" style={{ padding: "2rem" }}>
+      {inboxUrl ? (
+        <div style={{ textAlign: "center" }}>
+          <h4>Tu panel de Inbox</h4>
+          <button
+            onClick={() => window.open(inboxUrl, "_blank")}
+            style={{
+              padding: "1rem 2rem",
+              fontSize: "1rem",
+              backgroundColor: "#0d6efd",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer"
+            }}
+          >
+            Abrir Inbox
+          </button>
+        </div>
+      ) : (
+        <p>Cargando enlace personalizado...</p>
+      )}
+    </div>
   );
 };
 
