@@ -3,21 +3,10 @@ import React, { useEffect, useState } from "react";
 import { supabase } from '../../supabaseClient';
 
 const Home = () => {
-  document.title = "Inbox| 7 AM Digital";
+  document.title = "Planeación | 7 AM Digital";
 
   const [inboxUrl, setInboxUrl] = useState("");
 
-  // Evita scroll vertical del body cuando se muestra el iframe
-  useEffect(() => {
-    document.body.style.overflowY = "hidden";
-    document.documentElement.style.overflowY = "hidden";
-    return () => {
-      document.body.style.overflowY = "auto";
-      document.documentElement.style.overflowY = "auto";
-    };
-  }, []);
-
-  // Obtener la URL del inbox desde Supabase
   useEffect(() => {
     const fetchInboxUrl = async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -35,13 +24,12 @@ const Home = () => {
 
       if (error) {
         console.error("❌ Error al consultar la tabla users_data:", error);
-      } else if (data?.inbox) {
+      } else {
         let url = data.inbox;
-        // Asegurar que tenga el parámetro redirect=Inbox
-        if (!url.includes("redirect=Inbox")) {
+        if (url) {
           url += url.includes("?") ? "&redirect=Inbox" : "?redirect=Inbox";
+          setInboxUrl(url);
         }
-        setInboxUrl(url);
       }
     };
 
@@ -49,17 +37,23 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="page-content" style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <div className="page-content" style={{ padding: 0, margin: 0 }}>
       {inboxUrl ? (
         <iframe
           src={inboxUrl}
-          title="Metricool Inbox"
-          width="100%"
-          height="100%"
-          style={{ border: 'none' }}
+          title="Inbox"
+          style={{
+            width: "100vw",
+            height: "calc(100vh - 60px)", // Ajusta 60px si tienes header fijo
+            border: "none",
+            margin: 0,
+            padding: 0,
+            display: "block",
+            overflow: "hidden"
+          }}
         />
       ) : (
-        <p style={{ textAlign: "center", paddingTop: "2rem" }}>Cargando panel de Inbox...</p>
+        <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
       )}
     </div>
   );
