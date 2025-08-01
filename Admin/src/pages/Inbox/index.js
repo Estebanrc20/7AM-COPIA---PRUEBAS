@@ -3,10 +3,21 @@ import React, { useEffect, useState } from "react";
 import { supabase } from '../../supabaseClient';
 
 const Home = () => {
-  document.title = "Planeación | 7 AM Digital";
+  document.title = "Inbox| 7 AM Digital";
 
   const [inboxUrl, setInboxUrl] = useState("");
 
+  // Evita scroll vertical del body cuando se muestra el iframe
+  useEffect(() => {
+    document.body.style.overflowY = "hidden";
+    document.documentElement.style.overflowY = "hidden";
+    return () => {
+      document.body.style.overflowY = "auto";
+      document.documentElement.style.overflowY = "auto";
+    };
+  }, []);
+
+  // Obtener la URL del inbox desde Supabase
   useEffect(() => {
     const fetchInboxUrl = async () => {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -24,13 +35,13 @@ const Home = () => {
 
       if (error) {
         console.error("❌ Error al consultar la tabla users_data:", error);
-      } else {
+      } else if (data?.inbox) {
         let url = data.inbox;
-        // Si ya tiene parámetros, usa &redirect=Inbox, si no, usa ?redirect=Inbox
-        if (url) {
+        // Asegurar que tenga el parámetro redirect=Inbox
+        if (!url.includes("redirect=Inbox")) {
           url += url.includes("?") ? "&redirect=Inbox" : "?redirect=Inbox";
-          setInboxUrl(url);
         }
+        setInboxUrl(url);
       }
     };
 
@@ -38,27 +49,17 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="page-content" style={{ padding: "2rem" }}>
+    <div className="page-content" style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
       {inboxUrl ? (
-        <div style={{ textAlign: "center" }}>
-          <h4>Tu panel de Inbox</h4>
-          <button
-            onClick={() => window.open(inboxUrl, "_blank")}
-            style={{
-              padding: "1rem 2rem",
-              fontSize: "1rem",
-              backgroundColor: "#0d6efd",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              cursor: "pointer"
-            }}
-          >
-            Abrir Inbox
-          </button>
-        </div>
+        <iframe
+          src={inboxUrl}
+          title="Metricool Inbox"
+          width="100%"
+          height="100%"
+          style={{ border: 'none' }}
+        />
       ) : (
-        <p>Cargando enlace personalizado...</p>
+        <p style={{ textAlign: "center", paddingTop: "2rem" }}>Cargando panel de Inbox...</p>
       )}
     </div>
   );
