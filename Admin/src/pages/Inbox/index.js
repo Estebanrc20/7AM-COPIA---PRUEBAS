@@ -36,31 +36,49 @@ const Home = () => {
     fetchInboxUrl();
   }, []);
 
-  // Elimina scroll vertical innecesario del body
   useEffect(() => {
+    // Prevenir scroll vertical del body
+    document.documentElement.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
     return () => {
+      document.documentElement.style.overflow = 'auto';
       document.body.style.overflow = 'auto';
     };
   }, []);
 
   return (
-    <div className="page-content" style={{ padding: 0, margin: 0, height: "100vh", width: "100%" }}>
+    <>
       {inboxUrl ? (
         <iframe
           src={inboxUrl}
           title="Inbox"
           style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
             width: "100%",
             height: "100%",
             border: "none",
-            display: "block"
+            margin: 0,
+            padding: 0,
+            zIndex: 1,
           }}
         />
       ) : (
-        <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+          <p>Cargando enlace personalizado...</p>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
