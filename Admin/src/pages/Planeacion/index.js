@@ -48,10 +48,17 @@ const Home = () => {
 
   return (
     <React.Fragment>
-      <div className="page-content" style={{ height: '100vh', width: '100vw', overflow: 'hidden' }}>
+      <div className="page-content" style={{
+        height: '100vh',
+        width: '100%',
+        overflow: 'hidden',
+        padding: 0,
+        margin: 0,
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
         <MetricoolPanel />
       </div>
-
     </React.Fragment>
   );
 };

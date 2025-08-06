@@ -56,12 +56,12 @@ const MetricoolPanel = () => {
   const wrapperStyle = {
     position: 'fixed',
     top: 0,
-    left: sidebarWidth,
-    right: 0,
-    bottom: 0,
+    left: `${sidebarWidth}px`,
+    width: `calc(100vw - ${sidebarWidth}px)`,
+    height: '100vh',
     zIndex: 1,
     backgroundColor: '#fff',
-    transition: 'left 0.3s ease-in-out'
+    transition: 'left 0.3s ease-in-out, width 0.3s ease-in-out'
   };
 
   const iframeStyle = {
