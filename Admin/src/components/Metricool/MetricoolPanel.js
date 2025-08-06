@@ -39,21 +39,18 @@ const MetricoolPanel = () => {
 
   useEffect(() => {
     const sidebar = document.querySelector('aside') || document.querySelector('.sidebar') || document.querySelector('#sidebar');
-
-    const updateSidebarWidth = () => {
-      if (sidebar) {
-        const width = sidebar.getBoundingClientRect().width;
+    const observer = new ResizeObserver(entries => {
+      for (let entry of entries) {
+        const width = entry.contentRect.width;
         setSidebarWidth(width);
       }
+    });
+
+    if (sidebar) observer.observe(sidebar);
+
+    return () => {
+      if (sidebar) observer.unobserve(sidebar);
     };
-
-    // Llamar una vez al principio
-    updateSidebarWidth();
-
-    // Luego seguir actualizando cada 300ms
-    const interval = setInterval(updateSidebarWidth, 300);
-
-    return () => clearInterval(interval);
   }, []);
 
   const wrapperStyle = {
