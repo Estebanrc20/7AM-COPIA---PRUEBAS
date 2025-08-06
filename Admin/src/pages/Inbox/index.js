@@ -6,6 +6,8 @@ const Home = () => {
   document.title = "Inbox | 7 AM Digital";
 
   const [inboxUrl, setInboxUrl] = useState("");
+  const [notFound, setNotFound] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchInboxUrl = async () => {
@@ -13,6 +15,7 @@ const Home = () => {
 
       if (userError || !user) {
         console.error("❌ Usuario no autenticado o error:", userError);
+        setLoading(false);
         return;
       }
 
@@ -22,21 +25,24 @@ const Home = () => {
         .eq("email", user.email)
         .single();
 
-      if (error) {
+      if (error || !data) {
         console.error("❌ Error al consultar la tabla users_data:", error);
+        setNotFound(true);
+      } else if (!data.inbox) {
+        console.warn("⚠️ El campo 'inbox' está vacío para este usuario.");
+        setNotFound(true);
       } else {
         let url = data.inbox;
-        if (url) {
-          url += url.includes("?") ? "&redirect=Inbox" : "?redirect=Inbox";
-          setInboxUrl(url);
-        }
+        url += url.includes("?") ? "&redirect=Inbox" : "?redirect=Inbox";
+        setInboxUrl(url);
       }
+
+      setLoading(false);
     };
 
     fetchInboxUrl();
   }, []);
 
-  // Elimina scroll vertical innecesario del body
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
@@ -46,7 +52,22 @@ const Home = () => {
 
   return (
     <div className="page-content" style={{ padding: 0, margin: 0, height: "100vh", width: "100%" }}>
-      {inboxUrl ? (
+      {loading ? (
+        <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
+      ) : notFound ? (
+        <div style={{
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          padding: "2rem"
+        }}>
+          <p style={{ fontSize: "1.2rem", color: "#dc3545" }}>
+            ❌ No se encontró un iframe configurado para este usuario.
+          </p>
+        </div>
+      ) : (
         <iframe
           src={inboxUrl}
           title="Inbox"
@@ -57,8 +78,6 @@ const Home = () => {
             display: "block"
           }}
         />
-      ) : (
-        <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
       )}
     </div>
   );
