@@ -6,6 +6,8 @@ const Home = () => {
   document.title = "Anuncios | 7 AM Digital";
 
   const [anunciosUrl, setAnunciosUrl] = useState("");
+  const [notFound, setNotFound] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAnunciosUrl = async () => {
@@ -13,6 +15,7 @@ const Home = () => {
 
       if (userError || !user) {
         console.error("❌ Usuario no autenticado o error:", userError);
+        setLoading(false);
         return;
       }
 
@@ -22,14 +25,17 @@ const Home = () => {
         .eq("email", user.email)
         .single();
 
-      if (error) {
+      if (error || !data) {
         console.error("❌ Error al consultar la tabla users_data:", error);
+        setNotFound(true);
+      } else if (!data.anuncios) {
+        console.warn("⚠️ El campo 'anuncios' está vacío para este usuario.");
+        setNotFound(true);
       } else {
-        const url = data.anuncios;
-        if (url) {
-          setAnunciosUrl(url); // Ya tiene redirect incluido
-        }
+        setAnunciosUrl(data.anuncios); // Ya tiene ?redirect=advertising incluido
       }
+
+      setLoading(false);
     };
 
     fetchAnunciosUrl();
@@ -44,7 +50,22 @@ const Home = () => {
 
   return (
     <div className="page-content" style={{ padding: 0, margin: 0, height: "100vh", width: "100%" }}>
-      {anunciosUrl ? (
+      {loading ? (
+        <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
+      ) : notFound ? (
+        <div style={{
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          padding: "2rem"
+        }}>
+          <p style={{ fontSize: "1.2rem", color: "#363636ff" }}>
+             No se encontró un iframe configurado para esta sección.
+          </p>
+        </div>
+      ) : (
         <iframe
           src={anunciosUrl}
           title="Anuncios"
@@ -55,8 +76,6 @@ const Home = () => {
             display: "block"
           }}
         />
-      ) : (
-        <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
       )}
     </div>
   );

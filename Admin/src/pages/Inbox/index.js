@@ -63,9 +63,9 @@ const Home = () => {
           textAlign: "center",
           padding: "2rem"
         }}>
-          <p style={{ fontSize: "1.2rem", color: "#dc3545" }}>
-            ❌ No se encontró un iframe configurado para este usuario.
-          </p>
+          <h4 style={{ fontSize: "1.2rem", color: "#363636ff" }}>
+            No se encontró un iframe configurado para este usuario.
+          </h4>
         </div>
       ) : (
         <iframe

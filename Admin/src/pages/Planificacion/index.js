@@ -6,6 +6,8 @@ const Home = () => {
   document.title = "Planificación | 7 AM Digital";
 
   const [planificacionUrl, setPlanificacionUrl] = useState("");
+  const [notFound, setNotFound] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchPlannerUrl = async () => {
@@ -13,6 +15,7 @@ const Home = () => {
 
       if (userError || !user) {
         console.error("❌ Usuario no autenticado o error:", userError);
+        setLoading(false);
         return;
       }
 
@@ -22,21 +25,24 @@ const Home = () => {
         .eq("email", user.email)
         .single();
 
-      if (error) {
+      if (error || !data) {
         console.error("❌ Error al consultar la tabla users_data:", error);
+        setNotFound(true);
+      } else if (!data.planificacion) {
+        console.warn("⚠️ El campo 'planificacion' está vacío para este usuario.");
+        setNotFound(true);
       } else {
         let url = data.planificacion;
-        if (url) {
-          url += url.includes("?") ? "&redirect=Planner" : "?redirect=Planner";
-          setPlanificacionUrl(url);
-        }
+        url += url.includes("?") ? "&redirect=Planner" : "?redirect=Planner";
+        setPlanificacionUrl(url);
       }
+
+      setLoading(false);
     };
 
     fetchPlannerUrl();
   }, []);
 
-  // Evitar scroll vertical del body
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
@@ -46,7 +52,22 @@ const Home = () => {
 
   return (
     <div className="page-content" style={{ padding: 0, margin: 0, height: "100vh", width: "100%" }}>
-      {planificacionUrl ? (
+      {loading ? (
+        <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
+      ) : notFound ? (
+        <div style={{
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          padding: "2rem"
+        }}>
+          <p style={{ fontSize: "1.2rem", color: "#363636ff" }}>
+             No se encontró un iframe configurado para esta sección.
+          </p>
+        </div>
+      ) : (
         <iframe
           src={planificacionUrl}
           title="Planificación"
@@ -57,8 +78,6 @@ const Home = () => {
             display: "block"
           }}
         />
-      ) : (
-        <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
       )}
     </div>
   );
