@@ -36,20 +36,24 @@ const Home = () => {
     fetchSmartlinkUrl();
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
   return (
-    <div className="page-content" style={{ padding: 0, margin: 0 }}>
+    <div className="page-content" style={{ padding: 0, margin: 0, height: "100vh", width: "100%" }}>
       {smartlinksUrl ? (
         <iframe
           src={smartlinksUrl}
           title="SmartLinks"
           style={{
-            width: "100vw",
-            height: "calc(100vh - 60px)", // Ajusta según tu diseño
+            width: "100%",
+            height: "100%",
             border: "none",
-            margin: 0,
-            padding: 0,
-            display: "block",
-            overflow: "hidden"
+            display: "block"
           }}
         />
       ) : (

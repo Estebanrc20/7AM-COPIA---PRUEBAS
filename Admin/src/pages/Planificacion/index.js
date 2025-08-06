@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from '../../supabaseClient';
 
 const Home = () => {
-  document.title = "Planificacion | 7 AM Digital";
+  document.title = "Planificación | 7 AM Digital";
 
   const [planificacionUrl, setPlanificacionUrl] = useState("");
 
@@ -36,20 +36,25 @@ const Home = () => {
     fetchPlannerUrl();
   }, []);
 
+  // Evitar scroll vertical del body
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
   return (
-    <div className="page-content" style={{ padding: 0, margin: 0 }}>
+    <div className="page-content" style={{ padding: 0, margin: 0, height: "100vh", width: "100%" }}>
       {planificacionUrl ? (
         <iframe
           src={planificacionUrl}
-          title="Planificacion"
+          title="Planificación"
           style={{
-            width: "100vw",
-            height: "calc(100vh - 60px)", // Ajusta 60px si tienes header fijo
+            width: "100%",
+            height: "100%",
             border: "none",
-            margin: 0,
-            padding: 0,
-            display: "block",
-            overflow: "hidden"
+            display: "block"
           }}
         />
       ) : (
