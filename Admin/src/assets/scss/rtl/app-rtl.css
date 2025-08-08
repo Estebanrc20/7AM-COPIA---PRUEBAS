@@ -842,9 +842,9 @@ body[data-layout="horizontal"][data-topbar="colored"] .noti-icon i {
       color: rgba(255, 255, 255, 0.9) !important; } }
 
 body[data-layout-size="boxed"] {
-  background-color: #ebebf4; }
+  background-color: #ffffff; } 
   body[data-layout-size="boxed"] #layout-wrapper {
-    background-color: #f8f8fb;
+    background-color: #ffffff; 
     max-width: 1300px;
     margin: 0 auto;
     -webkit-box-shadow: 0 0.75rem 1.5rem rgba(18, 38, 63, 0.03);

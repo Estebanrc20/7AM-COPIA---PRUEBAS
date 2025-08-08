@@ -8,6 +8,17 @@ const Home = () => {
   const [inboxUrl, setInboxUrl] = useState("");
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
+
+  // Detectar si es móvil o tablet
+  useEffect(() => {
+    const checkDevice = () => {
+      setIsMobileOrTablet(window.innerWidth < 1024);
+    };
+    checkDevice();
+    window.addEventListener("resize", checkDevice);
+    return () => window.removeEventListener("resize", checkDevice);
+  }, []);
 
   useEffect(() => {
     const fetchInboxUrl = async () => {
@@ -51,8 +62,23 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="page-content" style={{ padding: 0, margin: 0, height: "100vh", width: "100%" }}>
-      {loading ? (
+    <div className="page-content" style={{
+      height: '100vh',
+      width: '100%',
+      overflow: 'hidden',
+      padding: 0,
+      margin: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }}>
+      {isMobileOrTablet ? (
+        <div style={{ textAlign: 'center', padding: '20px' }}>
+          <h2>⚠ No disponible en móvil</h2>
+          <p>Por favor use un computador para acceder a esta sección.</p>
+        </div>
+      ) : loading ? (
         <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
       ) : notFound ? (
         <div style={{

@@ -7,6 +7,17 @@ const Home = () => {
   document.title = "Planeacion | 7 AM Digital";
 
   const [iframeUrl, setIframeUrl] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detectar si es móvil
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile(); // Comprobación inicial
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // Quitar scroll vertical
   useEffect(() => {
@@ -55,9 +66,18 @@ const Home = () => {
         padding: 0,
         margin: 0,
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center'
       }}>
-        <MetricoolPanel />
+        {isMobile ? (
+          <div style={{ textAlign: 'center', padding: '20px' }}>
+            <h2>⚠ No disponible en móvil</h2>
+            <p>Por favor use un computador para acceder a esta sección.</p>
+          </div>
+        ) : (
+          <MetricoolPanel />
+        )}
       </div>
     </React.Fragment>
   );
