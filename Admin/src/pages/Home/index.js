@@ -8,14 +8,14 @@ import {
   CardBody,
   Button
 } from "reactstrap";
-import { useNavigate } from "react-router-dom"; // 👈 Importación añadida
+import { useNavigate } from "react-router-dom";
 import { supabase } from "../../supabaseClient";
 
 const Home = () => {
   const [userName, setUserName] = useState("");
   const [hoveredBtn, setHoveredBtn] = useState(null);
 
-  const navigate = useNavigate(); // 👈 Hook para navegar
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -43,7 +43,7 @@ const Home = () => {
   document.title = "Home | 7 AM Digital";
 
   const getButtonStyle = (hover) => ({
-    backgroundColor: hover ? "#000b24" : "#000b24",
+    backgroundColor: "#000b24",
     borderColor: "#6C63FF",
     color: "#fff",
     borderRadius: "0.5rem",
@@ -52,6 +52,18 @@ const Home = () => {
     transition: "all 0.3s ease-in-out",
     cursor: "pointer"
   });
+
+  const cardStyle = {
+    backgroundColor: "#f8f9fa",
+    border: "1px solid #dee2e6",
+    borderRadius: "1.2rem",
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+  };
+
+  const cardHoverStyle = {
+    transform: "scale(1.03)",
+    boxShadow: "0 8px 20px rgba(0, 0, 0, 0.15)"
+  };
 
   return (
     <React.Fragment>
@@ -68,14 +80,12 @@ const Home = () => {
             </Row>
           </div>
 
+          {/* Card principal */}
           <Row className="justify-content-center mb-5 mt-2">
             <Col md={10} lg={8}>
               <Card
-                className="text-center shadow rounded-4 py-4 px-3"
-                style={{
-                  backgroundColor: "#f8f9fa",
-                  border: "1px solid #dee2e6"
-                }}
+                className="text-center shadow py-4 px-3"
+                style={cardStyle}
               >
                 <CardBody>
                   <h2 className="fw-bold mb-3" style={{ color: "#343a40" }}>
@@ -94,85 +104,57 @@ const Home = () => {
             </Col>
           </Row>
 
+          {/* Cards de opciones */}
           <Row>
-            {/* Tarjeta 1 */}
-            <Col md={4} className="mb-4">
-              <Card
-                className="text-center h-100"
-                style={{
-                  backgroundColor: "#ffffff",
-                  border: "2px solid #6C63FF20",
-                  borderRadius: "1.2rem",
-                  boxShadow: "0 6px 16px rgba(108, 99, 255, 0.08)"
-                }}
-              >
-                <CardBody>
-                  <h5 style={{ color: "#000b24" }} className="fw-bold">CONTENIDO REDES SOCIALES</h5>
-                  <p className="fw-semibold">Haz crecer tus redes</p>
-                  <p>Publica contenido organizado sobre temas relacionados con tu negocio y las tendencias.</p>
-                  <Button
-                    style={getButtonStyle(hoveredBtn === 1)}
-                    onMouseEnter={() => setHoveredBtn(1)}
-                    onMouseLeave={() => setHoveredBtn(null)}
-                    onClick={() => navigate("/Planeacion")} // 👈 Redirección aquí
-                  >
-                    Ir ahora
-                  </Button>
-                </CardBody>
-              </Card>
-            </Col>
-
-            {/* Tarjeta 2 */}
-            <Col md={4} className="mb-4">
-              <Card
-                className="text-center h-100"
-                style={{
-                  backgroundColor: "#ffffff",
-                  border: "2px solid #6C63FF20",
-                  borderRadius: "1.2rem",
-                  boxShadow: "0 6px 16px rgba(108, 99, 255, 0.08)"
-                }}
-              >
-                <CardBody>
-                  <h5 style={{ color: "#000b24" }} className="fw-bold">BLOG WEB CON AJUSTES SEO</h5>
-                  <p className="fw-semibold">Aprovecha tu sitio web</p>
-                  <p>Artículos pensados para mejorar tu visibilidad y atraer clientes potenciales.</p>
-                  <Button
-                    style={getButtonStyle(hoveredBtn === 2)}
-                    onMouseEnter={() => setHoveredBtn(2)}
-                    onMouseLeave={() => setHoveredBtn(null)}
-                  >
-                    Proximamente...
-                  </Button>
-                </CardBody>
-              </Card>
-            </Col>
-
-            {/* Tarjeta 3 */}
-            <Col md={4} className="mb-4">
-              <Card
-                className="text-center h-100"
-                style={{
-                  backgroundColor: "#ffffff",
-                  border: "2px solid #6C63FF20",
-                  borderRadius: "1.2rem",
-                  boxShadow: "0 6px 16px rgba(108, 99, 255, 0.08)"
-                }}
-              >
-                <CardBody>
-                  <h5 style={{ color: "#000b24" }} className="fw-bold">WHATSAPP ENVÍOS MASIVOS</h5>
-                  <p className="fw-semibold">Marketing por WhatsApp</p>
-                  <p>Mensajes directos para atraer clientes y promocionar tus servicios o productos.</p>
-                  <Button
-                    style={getButtonStyle(hoveredBtn === 3)}
-                    onMouseEnter={() => setHoveredBtn(3)}
-                    onMouseLeave={() => setHoveredBtn(null)}
-                  >
-                    Proximamente...
-                  </Button>
-                </CardBody>
-              </Card>
-            </Col>
+            {[
+              {
+                title: "CONTENIDO REDES SOCIALES",
+                subtitle: "Haz crecer tus redes",
+                text: "Publica contenido organizado sobre temas relacionados con tu negocio y las tendencias.",
+                buttonText: "Ir ahora",
+                action: () => navigate("/Planeacion")
+              },
+              {
+                title: "BLOG WEB CON AJUSTES SEO",
+                subtitle: "Aprovecha tu sitio web",
+                text: "Artículos pensados para mejorar tu visibilidad y atraer clientes potenciales.",
+                buttonText: "Proximamente..."
+              },
+              {
+                title: "WHATSAPP ENVÍOS MASIVOS",
+                subtitle: "Marketing por WhatsApp",
+                text: "Mensajes directos para atraer clientes y promocionar tus servicios o productos.",
+                buttonText: "Proximamente..."
+              }
+            ].map((card, index) => (
+              <Col md={4} className="mb-4" key={index}>
+                <Card
+                  className="text-center h-100"
+                  style={{
+                    ...cardStyle,
+                    ...(hoveredBtn === `card-${index}` ? cardHoverStyle : {})
+                  }}
+                  onMouseEnter={() => setHoveredBtn(`card-${index}`)}
+                  onMouseLeave={() => setHoveredBtn(null)}
+                >
+                  <CardBody>
+                    <h5 style={{ color: "#000b24" }} className="fw-bold">
+                      {card.title}
+                    </h5>
+                    <p className="fw-semibold">{card.subtitle}</p>
+                    <p>{card.text}</p>
+                    <Button
+                      style={getButtonStyle(hoveredBtn === index)}
+                      onMouseEnter={() => setHoveredBtn(index)}
+                      onMouseLeave={() => setHoveredBtn(null)}
+                      onClick={card.action || undefined}
+                    >
+                      {card.buttonText}
+                    </Button>
+                  </CardBody>
+                </Card>
+              </Col>
+            ))}
           </Row>
         </Container>
       </div>

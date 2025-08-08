@@ -53,7 +53,7 @@ $heading-color:               var(--#{$prefix}heading-color);
 // Footer
 $footer-height: 60px;
 $footer-bg: var(--#{$prefix}footer-bg);
-$footer-color: #74788d;
+$footer-color: #7478ff;
 
 // Horizontal nav
 $topnav-bg:   #2a3142;
@@ -540,7 +540,7 @@ $position-values: (
 
 $body-text-align:           null;
 $body-color:                #5b626b;
-$body-bg:                   $gray-100;
+$body-bg:                   $white;
 
 $body-secondary-color:      #707070;
 $body-secondary-bg:         $white;

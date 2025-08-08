@@ -96,7 +96,7 @@ const Home = () => {
             <Row>
               {filteredTemplates.map(template => (
                 <Col md={3} className="mb-4" key={template.id}>
-                  <Card className="h-100 shadow-sm">
+                  <Card className="h-100 custom-card">
                     <CardBody>
                       <img
                         src={template.imagen}
@@ -149,7 +149,7 @@ const Home = () => {
         </Container>
       </div>
 
-      {/* Estilos del modal */}
+      {/* Estilos del modal y cards */}
       <style>{`
         .modal-backdrop {
           position: fixed;
@@ -182,6 +182,17 @@ const Home = () => {
         .btn-success {
           background-color: #00b894 !important;
           border-color: #00b894 !important;
+        }
+        /* Estilos para cards */
+        .custom-card {
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .custom-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 6px 16px rgba(0,0,0,0.12);
         }
       `}</style>
     </React.Fragment>

@@ -25,10 +25,33 @@ const Home = () => {
               </Col>
             </Row>
           </div>
-          <Row>
-            <Col md={12}>
+
+          {/* Contenedor centrado */}
+          <Row 
+            className="justify-content-center align-items-center" 
+            style={{ minHeight: "60vh" }}
+          >
+            <Col md={6} lg={4}>
+              <Card 
+                className="text-center shadow-lg border-0" 
+                style={{ 
+                  background: "linear-gradient(135deg, #5fd4cfff, #f7c1d2ff)", 
+                  color: "#333", 
+                  borderRadius: "1rem"
+                }}
+              >
+                <CardBody>
+                  <h3 style={{ fontWeight: "bold", letterSpacing: "1px" }}>
+                    🚀 Próximamente...
+                  </h3>
+                  <p style={{ fontSize: "0.9rem", opacity: 0.8 }}>
+                    Estamos preparando algo increíble para ti.
+                  </p>
+                </CardBody>
+              </Card>
             </Col>
           </Row>
+
         </Container>
       </div>
     </React.Fragment>
@@ -40,5 +63,3 @@ Home.propTypes = {
 };
 
 export default Home;
-
-
