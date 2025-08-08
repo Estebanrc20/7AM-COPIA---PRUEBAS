@@ -91,7 +91,7 @@ const Home = () => {
           padding: "2rem"
         }}>
           <h4 style={{ fontSize: "1.2rem", color: "#363636ff" }}>
-            No se encontró un iframe configurado para esta sección.
+            No se encontró un iframe configurado para este usuario.
           </h4>
         </div>
       ) : (
