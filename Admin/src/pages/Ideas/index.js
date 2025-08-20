@@ -59,7 +59,7 @@ const Home = () => {
     setEditedIdea({ ...idea });
   };
 
-   const handleCancel = () => {
+  const handleCancel = () => {
     if (String(editingId).startsWith("nuevo-")) {
       setIdeas(prevIdeas => prevIdeas.filter(i => i.id !== editingId));
     }
@@ -159,6 +159,57 @@ const Home = () => {
     };
   };
 
+  const sincronizarConMetricool = async () => {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) {
+        alert("Debes iniciar sesión para sincronizar.");
+        return;
+      }
+
+      // Buscar nombre en la tabla users_data
+      const { data: userData, error: userDataError } = await supabase
+        .from("users_data")
+        .select("nombre")
+        .eq("id", user.id)
+        .single();
+
+      if (userDataError) {
+        console.error("Error consultando users_data:", userDataError);
+        alert("No se pudo obtener el nombre del usuario.");
+        return;
+      }
+
+      const datos = {
+        id: user.id,
+        nombre: userData?.nombre || "Sin nombre",
+      };
+
+      const response = await fetch(
+        "https://hook.us2.make.com/hmeaxnukvht36o1w3et8yuif2hc0sua0",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos),
+        }
+      );
+
+      const respuestaTexto = await response.text();
+
+      console.log("📤 Datos enviados al webhook:", datos);
+      console.log("📥 Respuesta del webhook:", respuestaTexto);
+
+      if (response.ok) {
+        alert("✅ Notificación enviada al webhook correctamente.");
+      } else {
+        alert("❌ Error al enviar los datos.");
+      }
+    } catch (err) {
+      console.error("Error general:", err);
+      alert("❌ Ocurrió un problema en la sincronización.");
+    }
+  };
+
   document.title = "Ideas | 7 AM Digital";
 
   return (
@@ -206,7 +257,10 @@ const Home = () => {
             </Button>
           </Col>
           <Col className="text-end">
-            <Button style={{ backgroundColor: "#000b24", color: "#fff" }}>
+            <Button
+              style={{ backgroundColor: "#000b24", color: "#fff" }}
+              onClick={sincronizarConMetricool}
+            >
               Sincronizar con Metricool
             </Button>
           </Col>
