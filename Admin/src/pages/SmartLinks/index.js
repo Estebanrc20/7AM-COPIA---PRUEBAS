@@ -76,13 +76,15 @@ const Home = () => {
         <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
       ) : notFound ? (
         <div
+          className="page-content"
           style={{
-            height: "100%",
+            width: "100%",
+            minHeight: "100vh",  // 👈 mínimo pantalla, pero puede crecer
+            overflow: "auto",    // 👈 habilita scroll si el contenido es mayor
+            padding: 0,
+            margin: 0,
             display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            textAlign: "center",
-            padding: "2rem",
+            flexDirection: "column",
           }}
         >
           <h4 style={{ fontSize: "1.2rem", color: "#363636ff" }}>
@@ -95,11 +97,10 @@ const Home = () => {
           title="SmartLinks"
           style={{
             width: "100%",
-            height: "1300px",   // ocupa el contenedor
+            height: "1200px",   // ocupa el contenedor
             border: "none",
             display: "block",
           }}
-          scrolling="yes" // 👈 habilita scroll dentro del iframe
         />
       )}
     </div>
