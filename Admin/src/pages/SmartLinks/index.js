@@ -65,13 +65,10 @@ const Home = () => {
     <div className="page-content" style={{
       height: '100vh',
       width: '100%',
-      overflow: 'hidden',
       padding: 0,
       margin: 0,
       display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center'
+      flexDirection: 'column'
     }}>
       {isMobileOrTablet ? (
         <div style={{ textAlign: 'center', padding: '20px' }}>
@@ -98,10 +95,11 @@ const Home = () => {
           src={smartlinksUrl}
           title="SmartLinks"
           style={{
+            flex: 1,               // <-- ocupa todo el espacio restante
             width: "100%",
-            height: "100%",
             border: "none",
-            display: "block"
+            display: "block",
+            overflow: "auto"       // permite scroll si es necesario
           }}
         />
       )}

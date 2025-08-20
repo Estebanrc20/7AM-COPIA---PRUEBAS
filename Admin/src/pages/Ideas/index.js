@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useState, useEffect } from "react";
+import { FaTrash, FaEdit } from "react-icons/fa";
 import {
   Container,
   Row,
@@ -382,17 +383,48 @@ const Home = () => {
                                 </>
                               ) : (
                                 <>
-                                  <Button color="warning" size="sm" onClick={() => handleEdit(idea)}>
-                                    Editar
-                                  </Button>
-                                  <Button
-                                    color="danger"
-                                    size="sm"
-                                    onClick={() => handleDelete(idea.id)}
-                                    disabled={String(idea.id).startsWith("nuevo-")}
-                                  >
-                                    Eliminar
-                                  </Button>
+                                  <div style={{ display: "flex", gap: "6px" }}>
+                                    <Button
+                                      size="sm"
+                                      style={{
+                                        backgroundColor: "#e3f2fd", // azul muy claro
+                                        border: "none",
+                                        color: "#1976d2",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: "32px",
+                                        height: "32px",
+                                        transition: "background-color 0.3s ease" // transición suave
+                                      }}
+                                      onClick={() => handleEdit(idea)}
+                                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#bbdefb")} // azul un poco más oscuro
+                                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#e3f2fd")}
+                                    >
+                                      <FaEdit />
+                                    </Button>
+
+                                    <Button
+                                      size="sm"
+                                      style={{
+                                        backgroundColor: "#ffebee", // rojo muy claro
+                                        border: "none",
+                                        color: "#d32f2f",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: "32px",
+                                        height: "32px",
+                                        transition: "background-color 0.3s ease" // transición suave
+                                      }}
+                                      onClick={() => handleDelete(idea.id)}
+                                      disabled={String(idea.id).startsWith("nuevo-")}
+                                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#ffcdd2")} // rojo más fuerte
+                                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#ffebee")}
+                                    >
+                                      <FaTrash />
+                                    </Button>
+                                  </div>
                                 </>
                               )}
                             </div>
