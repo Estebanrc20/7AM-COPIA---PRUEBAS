@@ -95,10 +95,11 @@ const Home = () => {
           title="SmartLinks"
           style={{
             width: "100%",
-            height: "100vh", // ocupa toda la ventana
+            height: "100vh",
             border: "none",
             display: "block",
           }}
+          scrolling="yes"   // 👈 fuerza scroll interno
         />
       )}
     </div>
