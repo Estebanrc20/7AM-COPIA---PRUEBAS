@@ -17,6 +17,9 @@ import ResetPasswordPage from "pages/Authentication/ResetPassword";
 // Home
 import Home from "../pages/Home/index";
 
+//Estadisticas
+import Estadisticas from "../pages/Estadisticas";
+
 // Planeacion
 import Planeacion from "../pages/Planeacion";
 
@@ -56,6 +59,9 @@ const userRoutes = [
 
   // Planeacion
   { path: "/planeacion", component: <Planeacion />},
+
+  // Estadisticas
+  { path: "/estadisticas", component: <Estadisticas />},
   
   // Inbox
   { path: "/inbox", component: <Inbox />},
