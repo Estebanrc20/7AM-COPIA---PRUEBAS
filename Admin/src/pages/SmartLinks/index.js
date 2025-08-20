@@ -62,14 +62,17 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="page-content"
-      style={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        padding: 0,
-        margin: 0
-      }}>
+    <div className="page-content" style={{
+      height: '100vh',
+      width: '100%',
+      overflow: 'hidden',
+      padding: 0,
+      margin: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }}>
       {isMobileOrTablet ? (
         <div style={{ textAlign: 'center', padding: '20px' }}>
           <h2>⚠ No disponible en móvil</h2>
@@ -95,8 +98,8 @@ const Home = () => {
           src={smartlinksUrl}
           title="SmartLinks"
           style={{
-            flexGrow: 1,      // se expande en todo el espacio libre
             width: "100%",
+            height: "100%",
             border: "none",
             display: "block"
           }}
