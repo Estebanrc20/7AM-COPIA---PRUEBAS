@@ -60,7 +60,7 @@ const Home = () => {
       style={{
         height: "100vh",
         width: "100%",
-        overflow: "auto",  // 👈 permite scroll
+        overflow: "hidden", // 👈 el scroll lo maneja el iframe
         padding: 0,
         margin: 0,
         display: "flex",
@@ -95,11 +95,11 @@ const Home = () => {
           title="SmartLinks"
           style={{
             width: "100%",
-            height: "100vh",
+            height: "100%",   // ocupa el contenedor
             border: "none",
             display: "block",
           }}
-          scrolling="yes"   // 👈 fuerza scroll interno
+          scrolling="yes" // 👈 habilita scroll dentro del iframe
         />
       )}
     </div>
