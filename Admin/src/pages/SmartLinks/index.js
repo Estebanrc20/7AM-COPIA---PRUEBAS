@@ -99,7 +99,7 @@ const Home = () => {
           title="SmartLinks"
           style={{
             width: "100%",
-            height: "100%",
+            height: "calc(100vh + 60px)",  // +60px extra
             border: "none",
             display: "block"
           }}
