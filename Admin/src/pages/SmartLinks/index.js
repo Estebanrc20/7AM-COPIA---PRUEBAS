@@ -98,7 +98,7 @@ const Home = () => {
           src={smartlinksUrl}
           title="SmartLinks"
           style={{
-            width: "90%",
+            width: "100%",
             height: "calc(100vh + 60px)",  // +60px extra
             border: "none",
             display: "block"
