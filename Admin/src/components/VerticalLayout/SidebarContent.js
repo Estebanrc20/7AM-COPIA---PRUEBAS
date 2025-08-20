@@ -178,6 +178,13 @@ const SidebarContent = props => {
             </li>
 
             <li>
+              <Link to="/Ideas" className="waves-effect" id="menu-ideas">
+                <i className="ti-light-bulb"></i>
+                <span className="menu-text">{props.t("Ideas de contenido")}</span>
+              </Link>
+            </li>
+
+            <li>
               <Link
                 to="/Planeacion"
                 className="has-arrow waves-effect"
@@ -201,10 +208,10 @@ const SidebarContent = props => {
 
               <ul className="sub-menu" id="planeacionSubmenu" aria-expanded="false">
                 <li>
-                  <Link to="/Inbox">{props.t("Inbox")}</Link>
+                  <Link to="/Planificacion">{props.t("Planificación")}</Link>
                 </li>
                 <li>
-                  <Link to="/Planificacion">{props.t("Planificación")}</Link>
+                  <Link to="/Inbox">{props.t("Inbox")}</Link>
                 </li>
                 <li>
                   <Link to="/SmartLinks">{props.t("SmartLinks")}</Link>
@@ -218,13 +225,6 @@ const SidebarContent = props => {
               <Link to="/Plantillas" className="waves-effect" id="menu-plantillas">
                 <i className="ti-layout"></i>
                 <span className="menu-text">{props.t("Plantillas Canva")}</span>
-              </Link>
-            </li>
-
-            <li>
-              <Link to="/Ideas" className="waves-effect" id="menu-ideas">
-                <i className="ti-light-bulb"></i>
-                <span className="menu-text">{props.t("Ideas de contenido")}</span>
               </Link>
             </li>
 

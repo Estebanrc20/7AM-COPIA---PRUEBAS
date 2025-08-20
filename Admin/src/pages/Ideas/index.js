@@ -163,7 +163,7 @@ const Home = () => {
     try {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error || !user) {
-        alert("Debes iniciar sesión para sincronizar.");
+        alert("⚠️ Debes iniciar sesión antes de sincronizar tu contenido.");
         return;
       }
 
@@ -175,8 +175,7 @@ const Home = () => {
         .single();
 
       if (userDataError) {
-        console.error("Error consultando users_data:", userDataError);
-        alert("No se pudo obtener el nombre del usuario.");
+        alert("⚠️ No pudimos obtener tu nombre de usuario. Inténtalo nuevamente.");
         return;
       }
 
@@ -194,21 +193,16 @@ const Home = () => {
         }
       );
 
-      const respuestaTexto = await response.text();
-
-      console.log("📤 Datos enviados al webhook:", datos);
-      console.log("📥 Respuesta del webhook:", respuestaTexto);
-
       if (response.ok) {
-        alert("✅ Notificación enviada al webhook correctamente.");
+        alert("✅ Ahora puedes continuar en la sección de Planeación para seguir con tu proceso de contenido.");
       } else {
-        alert("❌ Error al enviar los datos.");
+        alert("❌ Hubo un problema al enviar la información. Por favor, intenta nuevamente.");
       }
     } catch (err) {
-      console.error("Error general:", err);
-      alert("❌ Ocurrió un problema en la sincronización.");
+      alert("❌ Ocurrió un error inesperado en la sincronización. Inténtalo otra vez.");
     }
   };
+
 
   document.title = "Ideas | 7 AM Digital";
 

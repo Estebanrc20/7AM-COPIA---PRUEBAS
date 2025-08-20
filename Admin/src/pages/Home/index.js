@@ -95,9 +95,10 @@ const Home = () => {
                     </span>
                   </h2>
                   <p className="lead text-muted mb-0">
-                    Automatiza tus procesos de marketing y concéntrate en vender.
+                    KIT 7AM: La forma más fácil de gestionar tus redes con IA.
                     <br />
-                    Deja que nuestros agentes IA tomen el control del contenido de tus canales digitales.
+                    ¿Te cuesta mantener tus redes sociales activas y con contenido de calidad?
+                    Con KIT 7AM tienes todo lo que necesitas para crecer en digital de manera simple y automática:
                   </p>
                 </CardBody>
               </Card>
@@ -108,23 +109,22 @@ const Home = () => {
           <Row>
             {[
               {
-                title: "CONTENIDO REDES SOCIALES",
-                subtitle: "Haz crecer tus redes",
-                text: "Publica contenido organizado sobre temas relacionados con tu negocio y las tendencias.",
+                title: "Ideas de contenido con IA",
+                text: "Deja de perder tiempo pensando qué publicar. Cada mes recibirás un cronograma completo de ideas de contenido, generado automáticamente con IA y adaptado a tu negocio.💡Publicaciones listas para inspirar, atraer y conectar con tu audiencia.",
                 buttonText: "Ir ahora",
-                action: () => navigate("/Planeacion")
+                action: () => navigate("/Ideas")
               },
               {
-                title: "BLOG WEB CON AJUSTES SEO",
-                subtitle: "Aprovecha tu sitio web",
-                text: "Artículos pensados para mejorar tu visibilidad y atraer clientes potenciales.",
-                buttonText: "Proximamente..."
+                title: "Planificador con IA para copys",
+                text: "No más bloqueos creativos. Nuestro planificador inteligente no solo organiza tus publicaciones, también incluye un creador de copys con IA para que cada post tenga el texto perfecto: llamativo, profesional y pensado para convertir.📅Planifica, redacta y programa en un solo lugar.",
+                buttonText: "Ir ahora",
+                action: () => navigate("/Planificacion")
               },
               {
-                title: "WHATSAPP ENVÍOS MASIVOS",
-                subtitle: "Marketing por WhatsApp",
-                text: "Mensajes directos para atraer clientes y promocionar tus servicios o productos.",
-                buttonText: "Proximamente..."
+                title: "Plantillas premium en Canva",
+                text: "Diseñar contenido nunca fue tan fácil. Accede a una biblioteca exclusiva de plantillas premium en Canva, listas para personalizar con tu logo, colores y estilo.🚀Crea diseños profesionales en minutos, sin necesidad de ser diseñador.",
+                buttonText: "Ir ahora",
+                action: () => navigate("/Plantillas")
               }
             ].map((card, index) => (
               <Col md={4} className="mb-4" key={index}>
