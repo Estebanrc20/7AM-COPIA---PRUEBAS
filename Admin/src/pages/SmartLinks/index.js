@@ -95,7 +95,7 @@ const Home = () => {
           title="SmartLinks"
           style={{
             width: "100%",
-            height: "100%",   // ocupa el contenedor
+            height: "1300px",   // ocupa el contenedor
             border: "none",
             display: "block",
           }}
