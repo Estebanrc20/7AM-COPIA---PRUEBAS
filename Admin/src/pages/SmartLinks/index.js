@@ -54,37 +54,41 @@ const Home = () => {
     fetchSmartlinkUrl();
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
   return (
-    <div
-      className="page-content"
-      style={{
-        height: "100vh",
-        width: "100%",
-        overflow: "auto",  // 👈 deja que el scroll funcione
-        padding: 0,
-        margin: 0,
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
+    <div className="page-content" style={{
+      height: '100vh',
+      width: '100%',
+      overflow: 'hidden',
+      padding: 0,
+      margin: 0,
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center'
+    }}>
       {isMobileOrTablet ? (
-        <div style={{ textAlign: "center", padding: "20px" }}>
+        <div style={{ textAlign: 'center', padding: '20px' }}>
           <h2>⚠ No disponible en móvil</h2>
           <p>Por favor use un computador para acceder a esta sección.</p>
         </div>
       ) : loading ? (
         <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
       ) : notFound ? (
-        <div
-          style={{
-            height: "100%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            textAlign: "center",
-            padding: "2rem",
-          }}
-        >
+        <div style={{
+          height: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          padding: "2rem"
+        }}>
           <h4 style={{ fontSize: "1.2rem", color: "#363636ff" }}>
             No se encontró un iframe configurado para este usuario.
           </h4>
@@ -94,10 +98,10 @@ const Home = () => {
           src={smartlinksUrl}
           title="SmartLinks"
           style={{
-            width: "100%",
-            height: "100%",
+            width: "90%",
+            height: "calc(100vh + 60px)",  // +60px extra
             border: "none",
-            display: "block",
+            display: "block"
           }}
         />
       )}
@@ -106,7 +110,7 @@ const Home = () => {
 };
 
 Home.propTypes = {
-  t: PropTypes.any,
+  t: PropTypes.any
 };
 
 export default Home;
