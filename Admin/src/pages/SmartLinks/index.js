@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { supabase } from '../../supabaseClient';
 
 const Home = () => {
@@ -9,6 +9,8 @@ const Home = () => {
   const [notFound, setNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
+  const [iframeHeight, setIframeHeight] = useState("100vh");
+  const iframeRef = useRef(null);
 
   // Detectar si es móvil o tablet
   useEffect(() => {
@@ -52,20 +54,24 @@ const Home = () => {
     fetchSmartlinkUrl();
   }, []);
 
-  // Dejamos el body con scroll normal
+  // Listener para recibir la altura desde el iframe
   useEffect(() => {
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'auto';
-    return () => { document.body.style.overflow = prevOverflow; };
+    const handleMessage = (event) => {
+      if (event.data && event.data.type === "setHeight") {
+        setIframeHeight(event.data.height + "px");
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, []);
 
   return (
     <div
       className="page-content"
       style={{
-        height: '100vh',
         width: '100%',
-        overflow: 'auto', // 👈 scroll si el iframe es más grande
+        minHeight: "100vh",
+        overflow: 'auto',
         padding: 0,
         margin: 0,
         display: 'flex',
@@ -96,11 +102,12 @@ const Home = () => {
         </div>
       ) : (
         <iframe
+          ref={iframeRef}
           src={smartlinksUrl}
           title="SmartLinks"
           style={{
             width: "100%",
-            minHeight: "100%", // 👈 asegura que mínimo ocupe todo
+            height: iframeHeight, // 👈 ajusta dinámicamente
             border: "none",
             display: "block"
           }}
