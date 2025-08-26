@@ -2,6 +2,8 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from "react";
 import { supabase } from '../../supabaseClient';
 
+const EXTRA_IFRAME_SPACE = 40; // px extra para evitar el corte inferior
+
 const Home = () => {
   document.title = "SmartLinks | 7 AM Digital";
 
@@ -12,9 +14,7 @@ const Home = () => {
 
   // Detectar si es móvil o tablet
   useEffect(() => {
-    const checkDevice = () => {
-      setIsMobileOrTablet(window.innerWidth < 1024);
-    };
+    const checkDevice = () => setIsMobileOrTablet(window.innerWidth < 1024);
     checkDevice();
     window.addEventListener("resize", checkDevice);
     return () => window.removeEventListener("resize", checkDevice);
@@ -54,24 +54,26 @@ const Home = () => {
     fetchSmartlinkUrl();
   }, []);
 
+  // Dejamos el body con scroll para que el extra del iframe sea visible si lo requiere
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'auto';
+    return () => { document.body.style.overflow = prevOverflow; };
   }, []);
 
   return (
-    <div style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      width: "100%",
-      height: "100%",
-      overflow: "hidden"
-    }}>
+    <div
+      className="page-content"
+      style={{
+        minHeight: `calc(100vh + ${EXTRA_IFRAME_SPACE}px)`,
+        width: '100%',
+        overflow: 'auto', // permitir mostrar el extra si hace falta
+        padding: 0,
+        margin: 0,
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
       {isMobileOrTablet ? (
         <div style={{ textAlign: 'center', padding: '20px' }}>
           <h2>⚠ No disponible en móvil</h2>
@@ -80,14 +82,16 @@ const Home = () => {
       ) : loading ? (
         <p style={{ padding: "2rem" }}>Cargando enlace personalizado...</p>
       ) : notFound ? (
-        <div style={{
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-          padding: "2rem"
-        }}>
+        <div
+          style={{
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            textAlign: "center",
+            padding: "2rem"
+          }}
+        >
           <h4 style={{ fontSize: "1.2rem", color: "#363636ff" }}>
             No se encontró un iframe configurado para este usuario.
           </h4>
@@ -98,9 +102,10 @@ const Home = () => {
           title="SmartLinks"
           style={{
             width: "100%",
-            height: "100%",
+            height: `calc(100vh + ${EXTRA_IFRAME_SPACE}px)`, // 👈 Opción 1 aplicada
             border: "none",
-            display: "block"
+            display: "block",
+            boxSizing: "border-box"
           }}
         />
       )}
