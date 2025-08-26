@@ -2,8 +2,6 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from "react";
 import { supabase } from '../../supabaseClient';
 
-const EXTRA_IFRAME_SPACE = 40; // px extra para evitar el corte inferior
-
 const Home = () => {
   document.title = "SmartLinks | 7 AM Digital";
 
@@ -54,7 +52,7 @@ const Home = () => {
     fetchSmartlinkUrl();
   }, []);
 
-  // Dejamos el body con scroll para que el extra del iframe sea visible si lo requiere
+  // Dejamos el body con scroll normal
   useEffect(() => {
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'auto';
@@ -65,9 +63,9 @@ const Home = () => {
     <div
       className="page-content"
       style={{
-        minHeight: `calc(100vh + ${EXTRA_IFRAME_SPACE}px)`,
+        height: '100vh',
         width: '100%',
-        overflow: 'auto', // permitir mostrar el extra si hace falta
+        overflow: 'auto', // 👈 scroll si el iframe es más grande
         padding: 0,
         margin: 0,
         display: 'flex',
@@ -102,10 +100,9 @@ const Home = () => {
           title="SmartLinks"
           style={{
             width: "100%",
-            height: `calc(100vh + ${EXTRA_IFRAME_SPACE}px)`, // 👈 Opción 1 aplicada
+            minHeight: "100%", // 👈 asegura que mínimo ocupe todo
             border: "none",
-            display: "block",
-            boxSizing: "border-box"
+            display: "block"
           }}
         />
       )}
