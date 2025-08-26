@@ -62,16 +62,15 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="page-content" style={{
-      height: '100vh',
-      width: '100%',
-      overflow: 'hidden',
-      padding: 0,
-      margin: 0,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center'
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      width: "100%",
+      height: "100%",
+      overflow: "hidden"
     }}>
       {isMobileOrTablet ? (
         <div style={{ textAlign: 'center', padding: '20px' }}>
