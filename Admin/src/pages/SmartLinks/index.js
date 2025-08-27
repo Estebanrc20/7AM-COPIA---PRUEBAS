@@ -54,25 +54,18 @@ const Home = () => {
     fetchSmartlinkUrl();
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, []);
-
   return (
-    <div className="page-content" style={{
-      height: '100vh',
-      width: '100%',
-      overflow: 'hidden',
-      padding: 0,
-      margin: 0,
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}>
+    <div 
+      className="page-content"
+      style={{
+        height: '100vh',
+        width: '100%',
+        padding: 0,
+        margin: 0,
+        display: 'flex',
+        flexDirection: 'column'
+      }}
+    >
       {isMobileOrTablet ? (
         <div style={{ textAlign: 'center', padding: '20px' }}>
           <h2>⚠ No disponible en móvil</h2>
@@ -99,7 +92,7 @@ const Home = () => {
           title="SmartLinks"
           style={{
             width: "100%",
-            height: "90vh",   // 🔥 reducido, ocupa el 90% del alto de la pantalla
+            height: "100vh",   // 🔥 ocupa todo el alto de la ventana
             border: "none",
             display: "block"
           }}
