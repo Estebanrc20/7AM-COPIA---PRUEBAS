@@ -99,10 +99,9 @@ const Home = () => {
           title="SmartLinks"
           style={{
             width: "100%",
-            height: "100vh",   // fijo al alto de la ventana
+            height: "90vh",   // 🔥 reducido, ocupa el 90% del alto de la pantalla
             border: "none",
-            display: "block",
-            overflow: "auto"   // permite scroll interno
+            display: "block"
           }}
         />
       )}
