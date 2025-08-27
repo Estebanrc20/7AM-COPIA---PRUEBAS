@@ -168,10 +168,10 @@ const Home = () => {
         return;
       }
 
-      // Buscar nombre en la tabla users_data
+      // Buscar nombre y blog_id en la tabla users_data
       const { data: userData, error: userDataError } = await supabase
         .from("users_data")
-        .select("nombre")
+        .select("nombre, blog_id")
         .eq("id", user.id)
         .single();
 
@@ -183,6 +183,7 @@ const Home = () => {
       const datos = {
         id: user.id,
         nombre: userData?.nombre || "Sin nombre",
+        blog_id: userData?.blog_id || null, // 👈 agregamos el blog_id
       };
 
       const response = await fetch(
