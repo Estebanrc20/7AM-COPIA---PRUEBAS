@@ -1,34 +1,32 @@
-// 
-// _footer.scss
-// 
-
 .footer {
-    bottom: 0;
-    padding: 20px calc(#{$grid-gutter-width} / 2);
-    position: absolute;
-    right: 0;
-    text-align: center;
-    color: var(--#{$prefix}footer-color);
-    left: 240px;
-    height: $footer-height;
-    background-color: var(--#{$prefix}footer-bg);
-}
-  
-@media (max-width: 992px) {
-    .footer {
-        left: 0;
-    }
+  bottom: 0;
+  right: 0;
+  left: 240px;
+  position: absolute;
+  text-align: center;
+
+  // Ajustes de tamaño
+  height: 30px !important;   // 👈 más bajo
+  padding: 4px 0 !important; // 👈 menos padding
+  font-size: 12px !important;
+  color: var(--#{$prefix}footer-color);
+  background-color: var(--#{$prefix}footer-bg);
 }
 
-// Enlarge menu
+@media (max-width: 992px) {
+  .footer {
+    left: 0;
+  }
+}
+
 .vertical-collpsed {
-    .footer {
-        left: $sidebar-collapsed-width;
-    }
+  .footer {
+    left: $sidebar-collapsed-width;
+  }
 }
 
 body[data-layout="horizontal"] {
-    .footer {
-        left: 0 !important;
-    }  
+  .footer {
+    left: 0 !important;
+  }
 }
