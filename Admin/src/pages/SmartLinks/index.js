@@ -54,16 +54,18 @@ const Home = () => {
     fetchSmartlinkUrl();
   }, []);
 
-  // ✅ Ahora permitimos scroll en la página
   useEffect(() => {
-    document.body.style.overflow = 'auto';
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
   }, []);
 
   return (
     <div className="page-content" style={{
-      minHeight: '100vh',   // antes estaba en height fijo
+      height: '100vh',
       width: '100%',
-      overflow: 'visible',  // antes estaba en hidden
+      overflow: 'hidden',
       padding: 0,
       margin: 0,
       display: 'flex',
@@ -97,9 +99,10 @@ const Home = () => {
           title="SmartLinks"
           style={{
             width: "100%",
-            minHeight: "100vh", // se adapta al contenido con scroll
+            height: "100vh",   // fijo al alto de la ventana
             border: "none",
-            display: "block"
+            display: "block",
+            overflow: "auto"   // permite scroll interno
           }}
         />
       )}
