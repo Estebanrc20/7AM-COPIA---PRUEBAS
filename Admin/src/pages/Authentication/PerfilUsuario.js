@@ -135,12 +135,24 @@ const PerfilUsuario = props => {
       setIsEditingEmail(false);
       return;
     }
+    // ✅ Detectar entorno para redireccionamiento
+    let redirectTo;
+    const hostname = window.location.hostname;
+
+    if (hostname === "portal.7am.com.co") {
+      redirectTo = "https://portal.7am.com.co/login";
+    } else if (hostname === "proyecto7-am-copia-pruebas.vercel.app") {
+      redirectTo = "https://7-am-copia-pruebas.vercel.app/login";
+    } else {
+      redirectTo = "http://localhost:3000/login";
+    }
 
     try {
-      // Actualizar en Authentication
-      const { error: authError } = await supabase.auth.updateUser({
-        email: newEmail,
-      });
+    // ✅ Actualizar en Authentication con emailRedirectTo
+    const { error: authError } = await supabase.auth.updateUser(
+      { email: newEmail },
+      { emailRedirectTo: redirectTo }
+    );
 
       if (authError) {
         console.error("Error actualizando en Auth:", authError.message);
