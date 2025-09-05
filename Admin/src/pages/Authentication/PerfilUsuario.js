@@ -32,6 +32,9 @@ const PerfilUsuario = props => {
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
+
   const [name, setName] = useState("");
   const [initial, setInitial] = useState("");
   const [bgColor, setBgColor] = useState("#6C63FF");
@@ -40,7 +43,7 @@ const PerfilUsuario = props => {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
-  const [previewImage, setPreviewImage] = useState(null); // Para la previsualización
+  const [previewImage, setPreviewImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [userData, setUserData] = useState({
@@ -71,6 +74,7 @@ const PerfilUsuario = props => {
 
       const userEmail = authUser.email;
       setEmail(userEmail);
+      setNewEmail(userEmail);
 
       const { data, error } = await supabase
         .from("users_data")
@@ -125,6 +129,55 @@ const PerfilUsuario = props => {
     }, 3000);
   }, [props.success]);
 
+  // Guardar nuevo correo
+  const handleSaveEmail = async () => {
+    if (!newEmail || newEmail === email) {
+      setIsEditingEmail(false);
+      return;
+    }
+
+    try {
+      // Actualizar en Authentication
+      const { error: authError } = await supabase.auth.updateUser({
+        email: newEmail,
+      });
+
+      if (authError) {
+        console.error("Error actualizando en Auth:", authError.message);
+        setUpdateError("Error al actualizar correo en Authentication: " + authError.message);
+        return;
+      }
+
+      // Actualizar en tabla users_data
+      const { error: tableError } = await supabase
+        .from("users_data")
+        .update({ email: newEmail })
+        .eq("email", email);
+
+      if (tableError) {
+        console.error("Error actualizando en users_data:", tableError.message);
+        setUpdateError("Error al actualizar correo en tabla: " + tableError.message);
+        return;
+      }
+
+      // Actualizar estado y localStorage
+      setEmail(newEmail);
+      const authUser = JSON.parse(localStorage.getItem("authUser"));
+      if (authUser) {
+        authUser.email = newEmail;
+        localStorage.setItem("authUser", JSON.stringify(authUser));
+      }
+
+      setIsEditingEmail(false);
+      setUpdateSuccess(true);
+      setTimeout(() => setUpdateSuccess(false), 3000);
+
+    } catch (err) {
+      console.error("Error inesperado:", err);
+      setUpdateError("Error inesperado: " + err.message);
+    }
+  };
+
   // Manejar selección de imagen en el modal
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -134,7 +187,7 @@ const PerfilUsuario = props => {
     }
   };
 
-  // Subir imagen al hacer clic en Guardar cambios
+  // Subir imagen
   const handleSaveImage = async () => {
     if (!selectedFile || !email) return;
 
@@ -260,7 +313,46 @@ const PerfilUsuario = props => {
                   </div>
                   <div className="align-self-center flex-1">
                     <h5>{name}</h5>
-                    <p className="mb-1 text-muted">{email}</p>
+                    <div className="d-flex align-items-center">
+                      {isEditingEmail ? (
+                        <>
+                          <Input
+                            type="email"
+                            value={newEmail}
+                            onChange={(e) => setNewEmail(e.target.value)}
+                            style={{ maxWidth: 250 }}
+                          />
+                          <Button
+                            style={{ backgroundColor: "#000b24", color: "#fff" }}
+                            size="sm"
+                            className="ms-2"
+                            onClick={handleSaveEmail}
+                          >
+                            Guardar
+                          </Button>
+                          <Button
+                            color="secondary"
+                            size="sm"
+                            className="ms-2"
+                            onClick={() => {
+                              setIsEditingEmail(false);
+                              setNewEmail(email);
+                            }}
+                          >
+                            Cancelar
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <p className="mb-1 text-muted">{email}</p>
+                          <FontAwesomeIcon
+                            icon={faPen}
+                            style={{ cursor: "pointer", marginLeft: 8 }}
+                            onClick={() => setIsEditingEmail(true)}
+                          />
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               </CardBody>
