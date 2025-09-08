@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import Logo from "../assets/images/logo7amblanco.png"; 
+
 
 const MobileBlocker = ({ children, authPaths }) => {
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -27,16 +30,37 @@ const MobileBlocker = ({ children, authPaths }) => {
         alignItems: "center",
         textAlign: "center",
         padding: "20px",
-        background: "#0b1220",
+        background: "#000b24",
         color: "#fff"
       }}>
+        {/* 👇 Logo personalizado (ponlo en public/logo.png o la ruta que uses) */}
         <img 
-          src="/logo192.png" 
+          src={Logo}  
           alt="7AM Digital" 
-          style={{ width: "80px", marginBottom: "20px" }} 
+          style={{ width: "120px", marginBottom: "25px" }} 
         />
+
         <h2>⚠ No disponible en móvil</h2>
-        <p>Por favor ingresa desde un computador para continuar.</p>
+        <p style={{ marginBottom: "20px" }}>
+          Esta sección solo está disponible desde un computador.  
+          Por favor accede desde un PC para continuar.
+        </p>
+
+        {/* 👇 Botón que lleva al login */}
+        <button
+          onClick={() => navigate("/login")}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: "#6c5ce7",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            cursor: "pointer",
+            fontSize: "16px"
+          }}
+        >
+          Volver al login
+        </button>
       </div>
     );
   }
