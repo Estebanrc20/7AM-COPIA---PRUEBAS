@@ -48,11 +48,11 @@ const MobileBlocker = ({ children, authPaths }) => {
 
         {/* 👇 Botón que lleva al login */}
         <button
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/Login")}
           style={{
             padding: "10px 20px",
-            backgroundColor: "#6c5ce7",
-            color: "#fff",
+            backgroundColor: "#ffffffff",
+            color: "#000b24",
             border: "none",
             borderRadius: "6px",
             cursor: "pointer",
