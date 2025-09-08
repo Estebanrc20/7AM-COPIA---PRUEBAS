@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types'; 
+import PropTypes from 'prop-types';
 import React from "react";
 import { Routes, Route } from 'react-router-dom';
 import { connect } from "react-redux";
@@ -6,29 +6,32 @@ import { connect } from "react-redux";
 import { userRoutes, authRoutes } from "./routes/allRoutes";
 import Authmiddleware from "./routes/middleware/Authmiddleware";
 import NonAuthLayout from "./components/NonAuthLayout";
+import MobileBlocker from "./components/MobileBlocker";
 
 import "./assets/scss/theme.scss";
 
 const App = () => {
   return (
     <React.Fragment>
-      <Routes>
-        {authRoutes.map((route, idx) => (
-          <Route
-            path={route.path}
-            element={<NonAuthLayout>{route.component}</NonAuthLayout>}
-            key={idx}
-          />
-        ))}
+      <MobileBlocker>   {/* 👈 Envolvemos todo en MobileBlocker */}
+        <Routes>
+          {authRoutes.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={<NonAuthLayout>{route.component}</NonAuthLayout>}
+              key={idx}
+            />
+          ))}
 
-        {userRoutes.map((route, idx) => (
-          <Route
-            path={route.path}
-            element={<Authmiddleware>{route.component}</Authmiddleware>}
-            key={idx}
-          />
-        ))}
-      </Routes>
+          {userRoutes.map((route, idx) => (
+            <Route
+              path={route.path}
+              element={<Authmiddleware>{route.component}</Authmiddleware>}
+              key={idx}
+            />
+          ))}
+        </Routes>
+        </MobileBlocker>
     </React.Fragment>
   );
 };
