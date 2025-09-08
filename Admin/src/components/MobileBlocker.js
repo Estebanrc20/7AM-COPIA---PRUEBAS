@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";   // 👈 importa tu cliente
 import Logo from "../assets/images/logo7amblanco.png"; 
-
 
 const MobileBlocker = ({ children, authPaths }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -17,38 +17,45 @@ const MobileBlocker = ({ children, authPaths }) => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Verificar si la ruta actual es pública (login, register, forgot-password)
-  const isAuthPath = authPaths.includes(location.pathname);
+  // 🔹 Normalizamos la ruta (quitamos "/" final si existe)
+  const currentPath = location.pathname.replace(/\/$/, "");
+  const isAuthPath = authPaths.includes(currentPath);
+
+  // 🔹 Función para cerrar sesión y mandar al login
+  const handleBackToLogin = async () => {
+    await supabase.auth.signOut();  // 👈 cerrar sesión
+    navigate("/login", { replace: true }); // 👈 ir al login limpio
+  };
 
   if (isMobile && !isAuthPath) {
     return (
-      <div style={{
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-        padding: "20px",
-        background: "#000b24",
-        color: "#fff"
-      }}>
-        {/* 👇 Logo personalizado (ponlo en public/logo.png o la ruta que uses) */}
+      <div
+        style={{
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+          padding: "20px",
+          background: "#000b24",
+          color: "#fff"
+        }}
+      >
+        {/* Logo */}
         <img 
           src={Logo}  
           alt="7AM Digital" 
-          style={{ width: "120px", marginBottom: "25px" }} 
+          style={{ width: "210px", maxWidth: "80%", marginBottom: "30px" }}
         />
 
         <h2>⚠ No disponible en móvil</h2>
         <p style={{ marginBottom: "20px" }}>
-          Esta sección solo está disponible desde un computador.  
-          Por favor accede desde un PC para continuar.
-        </p>
+          Por favor use un computador para acceder a esta seccion.</p>
 
-        {/* 👇 Botón que lleva al login */}
+        {/* Botón que lleva al login */}
         <button
-          onClick={() => navigate("/Login")}
+          onClick={handleBackToLogin}
           style={{
             padding: "10px 20px",
             backgroundColor: "#ffffffff",
@@ -56,7 +63,8 @@ const MobileBlocker = ({ children, authPaths }) => {
             border: "none",
             borderRadius: "6px",
             cursor: "pointer",
-            fontSize: "16px"
+            fontSize: "16px",
+            fontWeight: "500"   // 👈 aquí lo puse en negrilla
           }}
         >
           Volver al login
