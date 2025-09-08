@@ -95,9 +95,12 @@ const Login = () => {
               <div className="bg-primary text-center p-4 rounded-top">
                 <h5 className="text-white font-size-20">Bienvenido de nuevo</h5>
                 <p className="text-white-50 mb-0">Inicia sesión para continuar en 7AM</p>
-                <Link to="/">
+                <div
+                  onClick={() => navigate("/login")}
+                  style={{ cursor: "pointer", display: "inline-block" }}
+                >
                   <img src={logoSm} height="45" alt="logo" className="mt-2" />
-                </Link>
+                </div>
               </div>
 
               <CardBody className="p-4">
