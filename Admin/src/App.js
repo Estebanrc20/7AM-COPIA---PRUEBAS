@@ -13,7 +13,7 @@ import "./assets/scss/theme.scss";
 const App = () => {
   return (
     <React.Fragment>
-      <MobileBlocker>   {/* 👈 Envolvemos todo en MobileBlocker */}
+      <MobileBlocker authPaths={authRoutes.map(route => route.path)}>
         <Routes>
           {authRoutes.map((route, idx) => (
             <Route
@@ -38,7 +38,7 @@ const App = () => {
 
 App.propTypes = {
   layout: PropTypes.any
-};
+};  
 
 const mapStateToProps = state => {
   return { layout: state.Layout };

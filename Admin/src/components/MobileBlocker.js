@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
-const MobileBlocker = ({ children }) => {
+const MobileBlocker = ({ children, authPaths }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const checkMobile = () => {
-      // Bloquea celulares y tablets
       setIsMobile(window.innerWidth < 1024);
     };
     checkMobile();
@@ -13,7 +14,10 @@ const MobileBlocker = ({ children }) => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  if (isMobile) {
+  // Verificar si la ruta actual es pública (login, register, forgot-password)
+  const isAuthPath = authPaths.includes(location.pathname);
+
+  if (isMobile && !isAuthPath) {
     return (
       <div style={{
         height: "100vh",
@@ -22,10 +26,17 @@ const MobileBlocker = ({ children }) => {
         justifyContent: "center",
         alignItems: "center",
         textAlign: "center",
-        padding: "20px"
+        padding: "20px",
+        background: "#0b1220",
+        color: "#fff"
       }}>
+        <img 
+          src="/logo192.png" 
+          alt="7AM Digital" 
+          style={{ width: "80px", marginBottom: "20px" }} 
+        />
         <h2>⚠ No disponible en móvil</h2>
-        <p>Por favor use un computador para acceder a esta sección.</p>
+        <p>Por favor ingresa desde un computador para continuar.</p>
       </div>
     );
   }
