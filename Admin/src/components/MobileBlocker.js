@@ -51,7 +51,7 @@ const MobileBlocker = ({ children, authPaths }) => {
         <h2>⚠ Ingresa desde un computador</h2>
         <p style={{ marginBottom: "20px" }}>
           nuestra plataforma 7AM está diseñada para ingresar desde una computadora 
-          para asegurarte una correcta experiencia.</p>
+          para asegurarte <span style={{ whiteSpace: "nowrap" }}>una correcta experiencia.</span></p>
 
         {/* Botón que lleva al login */}
         <button
