@@ -48,10 +48,10 @@ const MobileBlocker = ({ children, authPaths }) => {
           alt="7AM Digital" 
           style={{ width: "210px", maxWidth: "80%", marginBottom: "30px" }}
         />
-
-        <h2>⚠ No disponible en móvil</h2>
+        <h2>⚠ Ingresa desde un computador</h2>
         <p style={{ marginBottom: "20px" }}>
-          Por favor use un computador para acceder a esta seccion.</p>
+          nuestra plataforma 7AM está diseñada para ingresar desde una computadora 
+          para asegurarte una correcta experiencia.</p>
 
         {/* Botón que lleva al login */}
         <button
